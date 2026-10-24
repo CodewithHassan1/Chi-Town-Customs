@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi-Town Customs USA — Shop Operations &amp; Inventory Client</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #08090B;
+      --bg-elevated: #111317;
+      --bg-secondary: #191C21;
+      --bg-hover: #22262E;
+      --border-subtle: #22262E;
+      --border-default: #292D34;
+      --brand-red: #D71920;
+      --brand-red-hover: #F1262D;
+      --text-primary: #F5F5F5;
+      --text-secondary: #A4A8B0;
+      --text-muted: #64748B;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --error: #EF4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--bg-elevated);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      flex-shrink: 0;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #FFFFFF;
+    }
+
+    .brand-title span {
+      color: var(--brand-red);
+    }
+
+    .badge-client {
+      background: rgba(215, 25, 32, 0.15);
+      border: 1px solid rgba(215, 25, 32, 0.4);
+      color: var(--brand-red);
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-default);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .status-dot.offline {
+      background: var(--error);
+      box-shadow: 0 0 8px var(--error);
+    }
+
+    .time-badge {
+      color: var(--text-secondary);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Main Container */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 58px);
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    aside {
+      width: 220px;
+      background-color: var(--bg-elevated);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background-color: var(--bg-secondary);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active {
+      background-color: rgba(215, 25, 32, 0.12);
+      border-color: rgba(215, 25, 32, 0.35);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active svg {
+      color: var(--brand-red);
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid var(--border-subtle);
+      background: #090B0E;
+    }
+
+    .shop-location {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .shop-location strong {
+      color: var(--text-secondary);
+      display: block;
+    }
+
+    /* Content Area */
+    main {
+      flex: 1;
+      background-color: var(--bg-primary);
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Page Header */
+    .view-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .view-title h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .view-title p {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .view-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .btn-red {
+      background-color: var(--brand-red);
+      color: #FFFFFF;
+      box-shadow: 0 0 12px rgba(215, 25, 32, 0.4);
+    }
+
+    .btn-red:hover {
+      background-color: var(--brand-red-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--bg-secondary);
+      border-color: var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-hover);
+      border-color: var(--text-secondary);
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 10px;
+    }
+
+    /* Controls Bar */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      position: relative;
+      min-width: 250px;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #FFFFFF;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--brand-red);
+    }
+
+    .filter-select {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #FFFFFF;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Data Table */
+    .table-container {
+      background-color: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-scroll {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 11px;
+    }
+
+    th {
+      background-color: #0D0F13;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(41, 45, 52, 0.5);
+      color: var(--text-primary);
+    }
+
+    tr:hover td {
+      background-color: rgba(25, 28, 33, 0.7);
+    }
+
+    .sku-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .stock-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .stock-ok {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .stock-low {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .stock-zero {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--error);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Barcode Station View */
+    .scanner-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .scanner-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .scan-prompt {
+      border: 2px dashed var(--border-default);
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      background: rgba(8, 9, 11, 0.5);
+    }
+
+    .scan-prompt.active {
+      border-color: var(--brand-red);
+      background: rgba(215, 25, 32, 0.05);
+    }
+
+    .barcode-input {
+      width: 100%;
+      background: #08090B;
+      border: 2px solid var(--border-default);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #FFFFFF;
+      text-align: center;
+      letter-spacing: 2px;
+      outline: none;
+    }
+
+    .barcode-input:focus {
+      border-color: var(--brand-red);
+      box-shadow: 0 0 12px rgba(215, 25, 32, 0.3);
+    }
+
+    .card-preview {
+      background: #08090B;
+      border: 1px solid var(--border-default);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* POS Ticket View */
+    .pos-layout {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .pos-cart {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pos-summary {
+      background: #08090B;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .pos-summary-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-secondary);
+    }
+
+    .pos-summary-row.total {
+      border-top: 1px solid var(--border-default);
+      padding-top: 8px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #FFFFFF;
+    }
+
+    .pos-summary-row.total span:last-child {
+      color: var(--brand-red);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 50;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-default);
+      border-radius: 12px;
+      width: 480px;
+      max-width: 90vw;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Print Ticket Styling */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        color: #000;
+        background: #fff;
+        padding: 20px;
+        font-family: monospace;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Application Header -->
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-title">CHI-TOWN <span>CUSTOMS</span> USA</div>
+      <span class="badge-client">SHOP FLOOR CLIENT</span>
+    </div>
+
+    <div class="header-status">
+      <div class="status-pill" id="backendPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="backendStatusText">Checking Server...</span>
+      </div>
+
+      <div class="time-badge" id="chicagoClock">--:--:-- CST</div>
+    </div>
+  </header>
+
+  <!-- Main Body Shell -->
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside>
+      <ul class="nav-list">
+        <li class="nav-item active" data-tab="tab-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span>Inventory Matrix</span>
+        </li>
+        <li class="nav-item" data-tab="tab-scanner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+          <span>Barcode Scanner</span>
+        </li>
+        <li class="nav-item" data-tab="tab-pos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="18" y2="12"/></svg>
+          <span>In-Store Ticket &amp; POS</span>
+        </li>
+        <li class="nav-item" data-tab="tab-pickup">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Pickup Desk</span>
+        </li>
+        <li class="nav-item" data-tab="tab-diagnostics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Sync &amp; Server</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="shop-location">
+          <strong>Chi-Town Customs USA</strong>
+          311 N Cicero Ave, Chicago<br>
+          +1 773-287-3000
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Views -->
+    <main>
+      <!-- Tab 1: Inventory Matrix -->
+      <section class="tab-content active" id="tab-inventory">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Authoritative Inventory Matrix</h2>
+            <p>Live synchronized balances from 311 N Cicero Ave warehouse</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-secondary" id="btnExportCsv">Export CSV</button>
+            <button class="btn btn-red" id="btnRefreshInventory">Sync Now</button>
+          </div>
+        </div>
+
+        <div class="controls-bar">
+          <div class="search-box">
+            <input type="text" class="search-input" id="inventorySearch" placeholder="Search by SKU, Product Name, Bolt Pattern, Finish, Barcode...">
+          </div>
+          <select class="filter-select" id="typeFilter">
+            <option value="ALL">All Product Types</option>
+            <option value="WHEEL">Wheels &amp; Rims</option>
+            <option value="TIRE">Performance Tires</option>
+            <option value="ACCESSORY">Hardware &amp; Lug Nuts</option>
+          </select>
+          <select class="filter-select" id="stockFilter">
+            <option value="ALL">All Stock Levels</option>
+            <option value="LOW">Low Stock Alert (&le; Reorder)</option>
+            <option value="OUT">Out of Stock (0 On Hand)</option>
+            <option value="IN_STOCK">In Stock (&gt; 0)</option>
+          </select>
+        </div>
+
+        <div class="table-container">
+          <div class="table-scroll">
+            <table id="inventoryTable">
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Product &amp; Specification</th>
+                  <th>Type</th>
+                  <th>Price</th>
+                  <th>On Hand</th>
+                  <th>Reserved</th>
+                  <th>Available</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventoryTbody">
+                <tr><td colspan="8" style="text-align:center; padding: 40px; color: var(--text-muted);">Connecting to authoritative backend...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Barcode Scanner -->
+      <section class="tab-content" id="tab-scanner">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Hardware Barcode &amp; Stock Station</h2>
+            <p>USB Laser barcode scanner ready. Scan any physical box or shelf label.</p>
+          </div>
+        </div>
+
+        <div class="scanner-layout">
+          <div class="scanner-box">
+            <div class="scan-prompt active" id="scanPromptBox">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--brand-red)" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              <h3 style="font-size: 15px; font-weight: 800; text-transform: uppercase;">Awaiting Barcode Scan</h3>
+              <p style="font-size: 11px; color: var(--text-secondary); max-width: 280px;">Scan barcode using handheld terminal, or enter barcode / SKU number manually below.</p>
+              <input type="text" class="barcode-input" id="scanInput" placeholder="BARCODE / SKU" autofocus>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-secondary" style="flex:1" id="btnTestScanWheel">Demo Scan Wheel</button>
+              <button class="btn btn-secondary" style="flex:1" id="btnTestScanTire">Demo Scan Tire</button>
+            </div>
+          </div>
+
+          <div class="scanner-box" id="scanResultBox">
+            <h3 style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--text-secondary);">Scanned Product Card</h3>
+            <div id="scanCardContent" style="display: flex; flex-direction: column; gap: 14px; color: var(--text-muted); text-align: center; padding: 40px 0;">
+              No item scanned yet. Scan a box to view specifications and adjust stock.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: POS Ticket -->
+      <section class="tab-content" id="tab-pos">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>In-Store Walk-in Sales Ticket</h2>
+            <p>Draft in-shop orders for counter customers at 311 N Cicero Ave</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-secondary" id="btnClearTicket">Clear Ticket</button>
+            <button class="btn btn-red" id="btnPrintReceipt">Print In-Store Receipt</button>
+          </div>
+        </div>
+
+        <div class="pos-layout">
+          <div class="pos-cart">
+            <div style="display: flex; gap: 10px;">
+              <input type="text" class="search-input" id="posProductSearch" placeholder="Type product name or SKU to add to ticket...">
+              <button class="btn btn-secondary" id="btnPosAdd">Add</button>
+            </div>
+
+            <div class="table-container" style="min-height: 250px;">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>SKU</th>
+                      <th>Price</th>
+                      <th>Qty</th>
+                      <th>Total</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="posTbody">
+                    <tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Ticket empty. Search and add products above.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="pos-cart">
+            <h3 style="font-size: 13px; font-weight: 800; text-transform: uppercase;">Customer &amp; Checkout</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <input type="text" class="search-input" id="posCustomerName" placeholder="Customer Name (e.g. Marcus Vance)">
+              <input type="tel" class="search-input" id="posCustomerPhone" placeholder="Customer Phone (+1 773-...)">
+              <input type="text" class="search-input" id="posVehicle" placeholder="Vehicle (e.g. 2024 Ford Mustang GT)">
+            </div>
+
+            <div class="pos-summary">
+              <div class="pos-summary-row">
+                <span>Subtotal:</span>
+                <span id="posSubtotal">$0.00</span>
+              </div>
+              <div class="pos-summary-row">
+                <span>Cook County / Chicago Tax (10.25%):</span>
+                <span id="posTax">$0.00</span>
+              </div>
+              <div class="pos-summary-row total">
+                <span>Total Amount:</span>
+                <span id="posTotal">$0.00</span>
+              </div>
+            </div>
+
+            <button class="btn btn-red" style="padding: 14px; justify-content: center; font-size: 13px;" id="btnRecordSale">
+              Record In-Shop Sale (Cash / Terminal)
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 4: Pickup Desk -->
+      <section class="tab-content" id="tab-pickup">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Store Pickup &amp; Fulfillment Desk</h2>
+            <p>Manage customer orders scheduled for in-person pickup at 311 N Cicero Ave</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-red" id="btnRefreshOrders">Refresh Orders</button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Contact</th>
+                  <th>Total</th>
+                  <th>Fulfillment Type</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="pickupTbody">
+                <tr><td colspan="7" style="text-align:center; padding: 40px; color: var(--text-muted);">Loading pickup orders...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 5: Sync & Server Diagnostics -->
+      <section class="tab-content" id="tab-diagnostics">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Authoritative Backend Synchronization</h2>
+            <p>Real-time telemetry with Next.js commerce API and PostgreSQL / SQLite database</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-red" id="btnForceFullSync">Force Full Re-Sync</button>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="scanner-box">
+            <h3 style="font-size: 13px; font-weight: 800; text-transform: uppercase;">Connection Diagnostics</h3>
+            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; display: flex; flex-direction: column; gap: 8px;">
+              <div><strong>Backend Host:</strong> <span id="diagHost">http://localhost:3000</span></div>
+              <div><strong>Server Health:</strong> <span id="diagStatus" style="color:var(--success)">ONLINE (200 OK)</span></div>
+              <div><strong>Roundtrip Ping:</strong> <span id="diagPing">14 ms</span></div>
+              <div><strong>Last Database Sync:</strong> <span id="diagLastSync">Just now</span></div>
+              <div><strong>Electron Architecture:</strong> <span id="diagArch">Chromium Isolated Preload Bridge</span></div>
+            </div>
+          </div>
+
+          <div class="scanner-box">
+            <h3 style="font-size: 13px; font-weight: 800; text-transform: uppercase;">Recent Stock Movement Audit Ledger</h3>
+            <div id="diagMovementsList" style="display: flex; flex-direction: column; gap: 8px; font-size: 11px; overflow-y: auto; max-height: 250px;">
+              Loading movements...
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Adjustment Modal -->
+  <div class="modal-backdrop" id="adjustModal">
+    <div class="modal-card">
+      <h3 style="font-size: 15px; font-weight: 800; text-transform: uppercase;" id="adjustModalTitle">Stock Adjustment</h3>
+      <p style="font-size: 11px; color: var(--text-secondary);" id="adjustModalSubtitle">Adjust authoritative stock on hand.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Quantity Delta (+ additions, - deductions)</label>
+        <input type="number" class="search-input" id="adjustQtyInput" value="1">
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary);">Reason for Audit Ledger *</label>
+        <input type="text" class="search-input" id="adjustReasonInput" placeholder="e.g. Physical stock count, damaged in shop, shop floor sale">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+        <button class="btn btn-secondary" id="btnCancelAdjust">Cancel</button>
+        <button class="btn btn-red" id="btnConfirmAdjust">Apply Stock Change</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Print Area for In-Store Receipt -->
+  <div id="printArea" style="display: none;"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

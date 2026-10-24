@@ -1,0 +1,347 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  INVENTORY_MANAGER
+  ORDER_MANAGER
+  CONTENT_MANAGER
+  FINANCE_MANAGER
+  STAFF
+  CUSTOMER
+}
+
+enum MovementType {
+  RECEIPT
+  ADJUSTMENT
+  SALE
+  RESERVATION
+  RELEASE
+  RETURN
+  DAMAGE
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  READY_FOR_PICKUP
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum InquiryType {
+  GENERAL_CONTACT
+  SERVICE_QUOTE
+  APPOINTMENT_REQUEST
+  FINANCING_LEAD
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  SCHEDULED
+  RESOLVED
+  CLOSED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("CUSTOMER") // Role enum string representation
+  phone         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  addresses     Address[]
+  orders        Order[]
+  movements     InventoryMovement[]
+  auditLogs     AuditLog[]
+  assignedInquiries Inquiry[] @relation("AssignedStaff")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   @default("SHIPPING") // SHIPPING or BILLING
+  name        String
+  street      String
+  city        String
+  state       String
+  zipCode     String
+  country     String   @default("US")
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  imageUrl    String?
+  sortOrder   Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  logoUrl     String?
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id               String           @id @default(cuid())
+  name             String
+  slug             String           @unique
+  brandId          String?
+  brand            Brand?           @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  categoryId       String?
+  category         Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  productType      String           @default("WHEEL") // WHEEL, TIRE, PACKAGE, ACCESSORY, SERVICE
+  description      String
+  shortDescription String?
+  basePrice        Float
+  salePrice        Float?
+  costPrice        Float?           // Restricted to ADMIN & INVENTORY_MANAGER
+  primaryImage     String
+  galleryImages    String           // JSON string of string URLs
+  technicalSpecs   String           // JSON string of specs
+  isFeatured       Boolean          @default(false)
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  variants         ProductVariant[]
+}
+
+model ProductVariant {
+  id             String    @id @default(cuid())
+  productId      String
+  product        Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku            String    @unique
+  barcode        String?
+  
+  // Wheel Specs
+  diameter       Float?    // e.g. 19, 20, 21, 22
+  width          Float?    // e.g. 8.5, 9.5, 10.5
+  boltPattern    String?   // e.g. "5x114.3", "5x120", "5x112"
+  offset         Int?      // e.g. 35, 42 (ET)
+  centerBore     Float?    // e.g. 72.6, 66.5
+  finish         String?   // "Gloss Black", "Brushed Graphite", "Candy Apple Red", "Satin Bronze"
+
+  // Tire Specs
+  tireWidth      Int?      // e.g. 255, 275, 295
+  aspectRatio    Int?      // e.g. 35, 40
+  speedRating    String?   // e.g. "Y", "W", "V"
+  season         String?   // "Summer", "All-Season", "Winter"
+
+  // Pricing & Stock
+  price          Float
+  salePrice      Float?
+  costPrice      Float?
+  stockOnHand    Int       @default(0)
+  stockReserved  Int       @default(0)
+  reorderLevel   Int       @default(4)
+  weightLbs      Float?
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  movements      InventoryMovement[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+}
+
+model InventoryMovement {
+  id             String         @id @default(cuid())
+  variantId      String
+  variant        ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  movementType   String         // MovementType enum string representation
+  quantityDelta  Int            // Positive for additions, negative for deductions
+  balanceAfter   Int            // Authoritative on-hand balance after change
+  referenceType  String?        // "ORDER", "MANUAL_ADJUSTMENT", "PURCHASE_RECEIPT", "RETURN"
+  referenceId    String?        // OrderId, PO#, etc.
+  reason         String?        // e.g. "Customer purchase", "Damaged in shop", "Physical stock count"
+  staffUserId    String?
+  staffUser      User?          @relation(fields: [staffUserId], references: [id], onDelete: SetNull)
+  createdAt      DateTime       @default(now())
+}
+
+model FitmentRecord {
+  id             String   @id @default(cuid())
+  year           Int
+  make           String
+  model          String
+  trim           String?
+  boltPattern    String
+  minDiameter    Float
+  maxDiameter    Float
+  minOffset      Int
+  maxOffset      Int
+  tireSizeFront  String?
+  tireSizeRear   String?
+  notes          String?
+  isVerified     Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model Cart {
+  id             String     @id @default(cuid())
+  userId         String?
+  sessionId      String?    @unique
+  subtotal       Float      @default(0)
+  taxAmount      Float      @default(0)
+  discountAmount Float      @default(0)
+  totalAmount    Float      @default(0)
+  couponCode     String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  items          CartItem[]
+}
+
+model CartItem {
+  id             String         @id @default(cuid())
+  cartId         String
+  cart           Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variantId      String
+  variant        ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  quantity       Int            @default(1)
+  unitPrice      Float
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Order {
+  id                  String        @id @default(cuid())
+  orderNumber         String        @unique
+  userId              String?
+  user                User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  guestEmail          String?
+  guestName           String?
+  guestPhone          String?
+  status              String        @default("PENDING") // OrderStatus enum string
+  paymentStatus       String        @default("PENDING") // PaymentStatus enum string
+  paymentMethod       String?       // "STRIPE_CARD", "SHOP_POS", "FINANCING"
+  paymentId           String?       // Stripe PaymentIntent ID
+  fulfillmentType     String        @default("SHIPPING") // "SHIPPING" or "LOCAL_PICKUP"
+  subtotal            Float
+  taxAmount           Float
+  shippingAmount      Float         @default(0)
+  discountAmount      Float         @default(0)
+  totalAmount         Float
+  shippingAddressJson String?       // Stored snapshot
+  billingAddressJson  String?       // Stored snapshot
+  trackingNumber      String?
+  carrier             String?
+  internalNotes       String?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  items               OrderItem[]
+  payments            Payment[]
+}
+
+model OrderItem {
+  id             String          @id @default(cuid())
+  orderId        String
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variantId      String?
+  variant        ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  productName    String          // Historical snapshot
+  variantSku     String          // Historical snapshot
+  specsSummary   String          // Historical snapshot: e.g. "20x9.5 | 5x114.3 | Gloss Black"
+  unitPrice      Float           // Historical snapshot
+  quantity       Int
+  lineTotal      Float
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount         Float
+  currency       String   @default("USD")
+  status         String   // "SUCCESS", "PENDING", "FAILED", "REFUNDED"
+  provider       String   // "STRIPE", "MOCK_SANDBOX", "CASH"
+  transactionRef String?
+  receiptUrl     String?
+  createdAt      DateTime @default(now())
+}
+
+model Inquiry {
+  id                    String        @id @default(cuid())
+  inquiryType           String        @default("GENERAL_CONTACT") // InquiryType enum string
+  customerName          String
+  customerEmail         String
+  customerPhone         String
+  vehicleYearMakeModel  String?
+  requestedService      String?       // "Rim Repair", "Powder Coating", "Tires", "Financing", etc.
+  message               String
+  preferredDate         String?
+  status                String        @default("NEW") // InquiryStatus enum string
+  internalNotes         String?
+  assignedStaffId       String?
+  assignedStaff         User?         @relation("AssignedStaff", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model SiteSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  valueJson   String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model CMSSection {
+  id          String   @id @default(cuid())
+  sectionKey  String   @unique // "hero", "announcement", "services", "faqs", "financing_banner"
+  title       String
+  subtitle    String?
+  contentJson String   // Rich structured JSON
+  isVisible   Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  action       String   // "INVENTORY_ADJUST", "ORDER_UPDATE", "PRICE_CHANGE", "USER_ROLE_CHANGE"
+  entity       String   // "ProductVariant", "Order", "User", "SiteSetting"
+  entityId     String
+  staffUserId  String?
+  staffUser    User?    @relation(fields: [staffUserId], references: [id], onDelete: SetNull)
+  staffEmail   String?
+  metadataJson String?  // JSON string showing before/after diff or details
+  ipAddress    String?
+  createdAt    DateTime @default(now())
+}

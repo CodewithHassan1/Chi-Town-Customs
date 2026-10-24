@@ -1,0 +1,21 @@
+{
+  "name": "chi-town-customs-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chi-Town Customs USA — Complete Digital Commerce, Operations CMS & Desktop Suite",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:desktop": "pnpm --filter desktop dev",
+    "build:web": "pnpm --filter web build",
+    "build:desktop": "pnpm --filter desktop build",
+    "build": "pnpm -r build",
+    "db:generate": "pnpm --filter database db:generate",
+    "db:push": "pnpm --filter database db:push",
+    "db:seed": "pnpm --filter database db:seed",
+    "test": "pnpm --filter web test",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

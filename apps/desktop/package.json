@@ -1,0 +1,22 @@
+{
+  "name": "desktop",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist-electron/main/index.js",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "build": "tsc && node scripts/copy-renderer.js",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@chi-town/contracts": "workspace:*",
+    "@chi-town/ui": "workspace:*",
+    "lucide-react": "^1.16.0"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.8.2",
+    "@types/node": "^22.13.9"
+  }
+}

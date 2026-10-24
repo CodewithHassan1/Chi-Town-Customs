@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #08090B;
+  --bg-elevated: #111317;
+  --bg-secondary: #191C21;
+  --text-primary: #F5F5F5;
+  --text-secondary: #A4A8B0;
+  --brand-red: #D71920;
+  --brand-red-hover: #F1262D;
+  --border-default: #292D34;
+
+  /* Typography Pairings (Default: Modern Wheel Specialist — Oswald Bold + Inter) */
+  --font-heading: var(--font-oswald), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
+/* Curated Font Pairing Classes */
+.font-pair-modern-wheel {
+  --font-heading: var(--font-oswald), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+}
+
+.font-pair-traditional-garage {
+  --font-heading: var(--font-montserrat), sans-serif;
+  --font-body: var(--font-roboto), sans-serif;
+}
+
+.font-pair-emergency-roadside {
+  --font-heading: var(--font-teko), sans-serif;
+  --font-body: var(--font-open-sans), sans-serif;
+}
+
+body {
+  background-color: #08090B;
+  color: #F5F5F5;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* High-energy automotive heading styling */
+h1, h2, h3, h4, h5, h6, .font-heading, .font-display {
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #08090B;
+}
+::-webkit-scrollbar-thumb {
+  background: #292D34;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D71920;
+}
+
+/* Metallic gradient backgrounds */
+.bg-metallic-dark {
+  background: linear-gradient(135deg, #111317 0%, #0d0f13 50%, #08090B 100%);
+}
+
+.bg-metallic-card {
+  background: linear-gradient(180deg, #191C21 0%, #111317 100%);
+  border: 1px solid #292D34;
+}
+
+.bg-metallic-card:hover {
+  border-color: #3F4552;
+}
+
+.text-gradient-chrome {
+  background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 50%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-red {
+  background: linear-gradient(180deg, #F1262D 0%, #D71920 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, #E52028 0%, #D71920 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(215, 25, 32, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #F8383F 0%, #E52028 100%);
+  box-shadow: 0 6px 20px rgba(215, 25, 32, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #191C21;
+  color: #F5F5F5;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: 1px solid #292D34;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: #20242B;
+  border-color: #3F4552;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.glow-red {
+  box-shadow: 0 0 25px rgba(215, 25, 32, 0.35);
+}

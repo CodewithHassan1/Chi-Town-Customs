@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" fill="none">
+  <defs>
+    <linearGradient id="chromeGradEmblem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="40%" stop-color="#E2E8F0" />
+      <stop offset="70%" stop-color="#94A3B8" />
+      <stop offset="100%" stop-color="#CBD5E1" />
+    </linearGradient>
+  </defs>
+  <circle cx="30" cy="30" r="28" stroke="url(#chromeGradEmblem)" stroke-width="3" fill="#08090B" />
+  <circle cx="30" cy="30" r="23" stroke="#292D34" stroke-width="1.5" fill="none" />
+  <path d="M30 7 L30 53 M7 30 L53 30 M14 14 L46 46 M14 46 L46 14" stroke="url(#chromeGradEmblem)" stroke-width="2.5" stroke-linecap="round" />
+  <circle cx="30" cy="30" r="9" fill="#111317" stroke="#D71920" stroke-width="2" />
+  <polygon points="30,24 32,28 36,28 33,30 34,34 30,32 26,34 27,30 24,28 28,28" fill="#D71920" />
+</svg>
