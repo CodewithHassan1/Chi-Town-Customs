@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>Chi-Town Customs USA - Client Operations Guide</title>
+<style>
+body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a1a1a; margin: 40px; }
+h1 { color: #D71920; font-size: 20pt; border-bottom: 2px solid #D71920; padding-bottom: 6px; margin-top: 24px; }
+h2 { color: #111317; font-size: 15pt; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 20px; }
+h3 { color: #333333; font-size: 12pt; margin-top: 16px; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+th, td { border: 1px solid #ddd; padding: 8px 12px; font-size: 10pt; text-align: left; }
+th { background-color: #f7f7f7; font-weight: bold; }
+blockquote { border-left: 4px solid #D71920; margin: 12px 0; padding: 8px 16px; background-color: #fdf5f5; }
+code { font-family: Consolas, monospace; }
+pre { background: #1e1e1e; color: #d4d4d4; padding: 12px; border: 1px solid #222; overflow-x: auto; }
+ul, ol { margin: 8px 0; padding-left: 24px; }
+li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<h1>Chi-Town Customs USA — Client & Store Operations User Guide</h1><p></p><strong>Platform Version:</strong> 1.0 (Storefront & Operations CMS)  
+<strong>Facility Location:</strong> 311 N Cicero Ave, Chicago, IL 60644  
+<strong>Primary Contact:</strong> +1 773-287-3000 | info@chitowncustoms.com  
+<strong>Website:</strong> [https://chi-town-customs.vercel.app](https://chi-town-customs.vercel.app)<p></p>---<p></p><h2>1. Platform Overview</h2><p></p>Welcome to <strong>Chi-Town Customs USA</strong>, Chicago's dedicated digital platform for custom forged wheels, performance tires, rim repair, and automotive styling.<p></p>This platform provides two cohesive experiences:
+1. <strong>The Customer Storefront</strong>: An engaging, high-end online shop where vehicle owners can verify exact wheel and tire fitment, explore custom finishes, request repair quotes, and pre-qualify for flexible financing.
+2. <strong>The Staff Operations Hub</strong>: A secure, centralized back-office dashboard where shop management and technicians oversee real-time inventory, process customer orders, manage repair inquiries, and update website content.<p></p>---<p></p><h2>2. Customer Experience & Common Workflows</h2><p></p><h3>A. Finding Guaranteed-Fit Wheels & Tires</h3>
+Customers never need to guess whether a wheel will clear their brake calipers or fit their bolt pattern:
+1. <strong>Enter Vehicle Specs</strong>: On the homepage or the dedicated <strong>Vehicle Fitment Finder</strong>, choose the vehicle <strong>Year</strong>, <strong>Make</strong>, <strong>Model</strong>, and <strong>Trim</strong>.
+2. <strong>Instant Matching</strong>: The system immediately filters the catalog to show only wheels and tires guaranteed to fit with zero fender rub and correct clearance.
+3. <strong>Explore Finishes</strong>: Customers can browse finishes such as Gloss Piano Black, Brushed Titanium, Satin Bronze, and Candy Apple Red.
+4. <strong>Select Fitment Packages</strong>: Add wheels, tires, or a complete mounted and balanced package to the shopping cart.<p></p>---<p></p><h3>B. Requesting Wheel Repair & Powder Coating Quotes</h3>
+For vehicle owners dealing with bent rims, curb rash, or cracked aluminum wheels:
+1. Navigate to <strong>Services</strong> in the top navigation bar.
+2. Choose from our core services:
+<li><strong>Hydraulic CNC Rim Straightening</strong>: Restores bent rims to factory runout tolerances.</li>
+<li><strong>TIG Crack Welding</strong>: Structural repair using aerospace-grade aluminum welding.</li>
+<li><strong>Custom Powder Coating</strong>: Multi-layer electrostatic coating cured in high-temperature ovens.</li>
+<li><strong>Hunter Road Force Elite Balancing</strong>: Eliminates highway vibration and uneven tire wear.</li>
+3. Click <strong>Get Free Quote</strong> to submit vehicle details, photos of wheel damage, and preferred appointment dates.
+4. A notification appears instantly in the staff operations hub for technician review.<p></p>---<p></p><h3>C. Applying for 0% Down Financing</h3>
+Customers can upgrade their wheels and tires immediately without paying everything upfront:
+1. Visit the <strong>Financing</strong> page from the main navigation.
+2. Select from our trusted finance partners: <strong>Snap Finance</strong>, <strong>Acima Leasing</strong>, or <strong>Affirm</strong>.
+3. Complete the secure 2-minute pre-qualification form (no impact on credit scores).
+4. Approved customers receive an instant spending limit and can take advantage of convenient <strong>100-Day Cash Payoff</strong> promotions.<p></p>---<p></p><h3>D. Checkout & Order Fulfillment Options</h3>
+Customers have complete flexibility during checkout:
+<li><strong>Local Shop Pickup</strong>: Pick up completed orders directly at our facility (311 N Cicero Ave, Chicago). Includes optional professional in-shop mounting and balancing.</li>
+<li><strong>Nationwide Freight Shipping</strong>: Insured freight delivery with full tracking right to the customer's home or preferred installer.</li><p></p>---<p></p><h2>3. Staff Operations Hub (<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">/admin</code>)</h2><p></p>The Staff Hub is the command center for shop management. It is private and accessible only to authorized personnel.<p></p><h3>A. Accessing the Staff Portal</h3>
+1. Open any modern web browser.
+2. In the URL address bar, type:
+   ``<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+   https://chi-town-customs.vercel.app/admin
+   </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+3. The platform will automatically direct you to the secure <strong>Staff Sign In</strong> portal.
+4. Enter your authorized staff email address and password, then click <strong>Sign In To Admin</strong>.<p></p>> <strong>Note:</strong> To maintain security, there are no public links to the admin portal on the customer-facing website. Simply enter </code>/admin<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> in the browser bar.<p></p>---<p></p><h3>B. Daily Operations Dashboard</h3>
+Upon signing in, you are greeted by the <strong>Operations Dashboard</strong>:
+<li><strong>Live Revenue & Order Volume</strong>: Track daily, weekly, and monthly sales performance.</li>
+<li><strong>Open Repair & Quote Requests</strong>: See new customer inquiries requiring pricing estimates or scheduling follow-ups.</li>
+<li><strong>Low Inventory Alerts</strong>: Quickly spot popular tire sizes or custom wheel variants that have dropped below minimum stock levels.</li>
+<li><strong>Recent Inventory Activity</strong>: View the latest stock adjustments, shipments received, and reserved customer sets.</li><p></p>---<p></p><h3>C. Managing Inventory (Stock Ledger)</h3>
+1. In the left navigation menu, click <strong>Inventory Ledger</strong>.
+2. <strong>Reviewing Stock</strong>: See exact counts for </code>On Hand<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (physical shop stock) and </code>Reserved` (already purchased by customers awaiting pickup).
+3. <strong>Receiving Shipments</strong>: When a freight shipment of wheels or tires arrives from suppliers (e.g. Michelin, Continental), click <strong>Receive Stock</strong>, select the item, enter the quantity, and input the Purchase Order number.
+4. <strong>Manual Adjustments</strong>: If an item is damaged on the shop floor or used for an in-house warranty replacement, log an adjustment with a brief note so shop records remain 100% accurate.<p></p>---<p></p><h3>D. Fulfilling Customer Orders</h3>
+1. In the left menu, select <strong>Orders & Fulfillment</strong>.
+2. Click on any customer order to inspect purchase details, customer contact information, and requested fulfillment method (Local Pickup vs. Shipping).
+3. <strong>Updating Order Progress</strong>:
+<li>Change status to <strong>Processing</strong> when technicians begin mounting and balancing wheels.</li>
+<li>Change status to <strong>Ready for Pickup</strong> when the set is prepped in the front lobby. The customer automatically receives an email notification.</li>
+<li>For freight orders, enter the carrier (e.g., FedEx Freight, UPS) and tracking number, then mark as <strong>Shipped</strong>.</li><p></p>---<p></p><h3>E. Handling Quotes & Service Inquiries</h3>
+1. Click <strong>Quotes & Inquiries</strong> in the left menu.
+2. Review incoming requests for rim repair, powder coating, or financing assistance.
+3. Open an inquiry to read the customer's vehicle model and description of wheel damage.
+4. Assign the request to a specific technician, add internal pricing notes, and update the status to <strong>Contacted</strong> or <strong>Scheduled</strong> once you have spoken with the customer.<p></p>---<p></p><h3>F. Updating Website Content (CMS Site Customizer)</h3>
+Management can easily update storefront promotions without contacting developers:
+1. Click <strong>CMS Site Customizer</strong> in the left menu.
+2. Adjust promotional announcements (e.g., <em>"Fall Wheel & Tire Special: 10% Off Powder Coating"</em>).
+3. Update featured shop services, warranty terms, or frequently asked questions.
+4. Click <strong>Save Changes</strong> to instantly reflect updates on the live website.<p></p>---<p></p><h3>G. Signing Out</h3>
+At the end of your shift:
+1. Look at the bottom of the left sidebar.
+2. Click <strong>Sign Out</strong>.
+3. The platform will terminate your active session and return you to the login screen, ensuring your system remains secure.<p></p>---<p></p><h2>4. System Requirements</h2><p></p><h3>Recommended Web Browsers</h3>
+The Chi-Town Customs platform is fully responsive and optimized for modern web browsers:
+<li><strong>Desktop</strong>: Google Chrome (v110+), Apple Safari (v16+), Microsoft Edge (v110+), Mozilla Firefox (v115+).</li>
+<li><strong>Mobile & Tablets</strong>: Safari on iOS 16+, Chrome on Android 12+.</li><p></p><h3>Shop Floor Hardware (Optional POS)</h3>
+<li><strong>Screen Resolution</strong>: Best experienced on displays of 1280x720 or higher.</li>
+<li><strong>Barcode Scanners</strong>: Any standard USB or Bluetooth HID barcode scanner can be used to scan wheel and tire SKU barcodes directly into the search fields.</li><p></p>---<p></p><h2>5. Frequently Asked Questions & Troubleshooting</h2><p></p><h3>Q1: I am trying to open the Admin Portal, but it redirects me to a login page. Is this normal?</h3>
+<strong>Answer:</strong> Yes. For security purposes, all management pages require an active staff login. Enter your staff credentials on the login screen to access the portal.<p></p><h3>Q2: What should I do if an employee forgets their staff password?</h3>
+<strong>Answer:</strong> The Super Admin can reset staff credentials directly in the <strong>System Settings</strong> section of the Staff Hub, or an administrator can re-assign passwords using secure shop protocols.<p></p><h3>Q3: A customer's rare or custom vehicle doesn't appear in the Fitment Finder. How can we help them?</h3>
+<strong>Answer:</strong> Direct the customer to click <strong>Custom Fitment Inquiry</strong> on the fitment page, or advise them to call the shop at <strong>+1 773-287-3000</strong>. Master technicians can take manual measurements of bolt patterns, hub bore, and brake caliper overhang to build a custom fitment package.<p></p><h3>Q4: How quickly does customer stock update when an order is placed?</h3>
+<strong>Answer:</strong> Instantly. As soon as an order is completed, the system automatically marks the items as <em>Reserved</em>, preventing double-selling.<p></p><h3>Q5: How do we update our shop hours for holidays?</h3>
+<strong>Answer:</strong> Navigate to <strong>CMS Site Customizer</strong> in the Staff Hub, edit the <strong>Shop Information & Hours</strong> section, and click save. The change appears on the public storefront immediately.<p></p>---<p></p><h2>6. Support Contacts</h2><p></p>For operational or technical inquiries, contact the platform management team:
+<li><strong>Facility Address</strong>: 311 N Cicero Ave, Chicago, IL 60644</li>
+<li><strong>Shop Phone</strong>: +1 773-287-3000</li>
+<li><strong>Customer Support Email</strong>: support@chitowncustoms.com</li>
+<li><strong>Emergency Technical Support</strong>: admin@chitowncustoms.com</li>
+
+</body>
+</html>

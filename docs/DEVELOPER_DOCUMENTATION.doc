@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset='utf-8'>
+<title>Chi-Town Customs USA - Developer Documentation</title>
+<style>
+body { font-family: 'Calibri', 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.5; color: #1a1a1a; margin: 40px; }
+h1 { color: #D71920; font-size: 20pt; border-bottom: 2px solid #D71920; padding-bottom: 6px; margin-top: 24px; }
+h2 { color: #111317; font-size: 15pt; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 20px; }
+h3 { color: #333333; font-size: 12pt; margin-top: 16px; }
+table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+th, td { border: 1px solid #ddd; padding: 8px 12px; font-size: 10pt; text-align: left; }
+th { background-color: #f7f7f7; font-weight: bold; }
+blockquote { border-left: 4px solid #D71920; margin: 12px 0; padding: 8px 16px; background-color: #fdf5f5; }
+code { font-family: Consolas, monospace; }
+pre { background: #1e1e1e; color: #d4d4d4; padding: 12px; border: 1px solid #222; overflow-x: auto; }
+ul, ol { margin: 8px 0; padding-left: 24px; }
+li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<h1>Chi-Town Customs USA — Developer Documentation & Technical Architecture Guide</h1><p></p><strong>Version:</strong> 1.0.0-PROD  
+<strong>Target Environment:</strong> Node.js 20+ | Next.js 15.5+ (App Router) | Prisma ORM 6.4+ | Electron 35+  
+<strong>Production URL:</strong> [https://chi-town-customs.vercel.app](https://chi-town-customs.vercel.app)  
+<strong>Repository:</strong> [https://github.com/CodewithHassan1/Chi-Town-Customs](https://github.com/CodewithHassan1/Chi-Town-Customs)<p></p>---<p></p><h2>1. System Overview & Architecture</h2><p></p>Chi-Town Customs USA is an end-to-end digital commerce, operations management, and desktop point-of-sale platform engineered specifically for an automotive wheel repair, custom forged wheel, and performance tire business located at 311 N Cicero Ave, Chicago, IL.<p></p>The platform is architected as a high-performance <strong>pnpm monorepo</strong> containing decoupled front-end, backend, desktop, and shared database contracts:<p></p>``<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Chi-Town Customs Monorepo
+├── apps/
+│   ├── web/                     # Next.js 15 App Router (Storefront & Admin CMS)
+│   │   ├── public/              # Static assets (logo, videos, images)
+│   │   ├── src/
+│   │   │   ├── app/             # App Router pages & server routes
+│   │   │   │   ├── (store)/     # Public storefront routes
+│   │   │   │   ├── admin/       # Protected staff operations hub
+│   │   │   │   └── api/         # RESTful API endpoints
+│   │   │   ├── components/      # UI components & interactive overlays
+│   │   │   ├── context/         # Client state providers (CartContext, etc.)
+│   │   │   ├── lib/             # Server utilities (db, auth, validation)
+│   │   │   └── middleware.ts    # Edge route protection & header interception
+│   │   └── next.config.js       # Next.js server configuration & tracing rules
+│   │
+│   └── desktop/                 # Electron desktop application for shop floor
+│       ├── src/
+│       │   ├── main/            # Electron main process & IPC handlers
+│       │   ├── preload/         # Context isolation bridge
+│       │   └── renderer/        # Shop POS, scanner, and receipt printing UI
+│       └── package.json
+│
+├── packages/
+│   ├── database/                # Authoritative data access layer
+│   │   ├── prisma/
+│   │   │   ├── schema.prisma    # Authoritative entity models & enums
+│   │   │   └── dev.db           # Development SQLite binary database
+│   │   └── src/
+│   │       └── seed.ts          # Complete enterprise database seeder
+│   │
+│   ├── contracts/               # Shared TypeScript types, enums & Zod schemas
+│   └── ui/                      # Shared styling tokens & design primitives
+│
+├── package.json                 # Monorepo root scripts & dev dependencies
+└── pnpm-workspace.yaml          # Monorepo workspace configuration
+</code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>---<p></p><h2>2. Core Dependencies & Technology Stack</h2><p></p>| Layer | Technology | Version | Purpose |
+| :--- | :--- | :--- | :--- |
+| <strong>Framework</strong> | Next.js (App Router) | </code>15.5.28<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | SSR, Server Components, API Routes, Edge Middleware |
+| <strong>UI Library</strong> | React | </code>19.0.0<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Client component rendering & concurrency |
+| <strong>Styling</strong> | Vanilla CSS + Tailwind | </code>3.4.17<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Hardware-accelerated automotive dark theme |
+| <strong>Icons</strong> | Lucide React | </code>1.16.0<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | SVG icons for automotive UI and admin navigation |
+| <strong>ORM</strong> | Prisma Client | </code>6.19.3<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Type-safe SQL querying and data access |
+| <strong>Database</strong> | SQLite (dev/edge) / Postgres | Compatible | Cold-start resilient persistence |
+| <strong>Validation</strong> | Zod | </code>3.24.2<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Runtime request body and parameter validation |
+| <strong>Desktop</strong> | Electron | </code>35.0.0<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Internal shop operations, barcode scanning, POS |
+| <strong>Package Mgr</strong> | pnpm | </code>10.28.0<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | Strict dependency isolation & workspace caching |<p></p>---<p></p><h2>3. Environment Variables & Configuration</h2><p></p>Create an </code>.env<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> file in </code>apps/web/<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> and </code>packages/database/<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">:<p></p></code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">env
+<h1>Database Connection String</h1>
+<h1>For local SQLite:</h1>
+DATABASE_URL="file:./dev.db"
+<h1>For production PostgreSQL / Supabase / Neon:</h1>
+<h1>DATABASE_URL="postgresql://user:password@host:5432/chitown?sslmode=require"</h1><p></p><h1>Application Base URL</h1>
+NEXT_PUBLIC_APP_URL="http://localhost:3000"<p></p><h1>Cryptographic Session Signing Key (HMAC SHA-256)</h1>
+SESSION_SECRET="chitown_production_hmac_secret_2026_super_secure_key"<p></p><h1>Port Configuration</h1>
+PORT=3000
+NODE_ENV="development" # or "production"<p></p><h1>Payment Gateways (Stripe integration)</h1>
+STRIPE_SECRET_KEY="sk_test_..."
+STRIPE_WEBHOOK_SECRET="whsec_..."
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="pk_test_..."
+</code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>---<p></p><h2>4. Local Installation & Development Workflow</h2><p></p><h3>Prerequisites</h3>
+<li><strong>Node.js</strong>: v20.10.0 or higher</li>
+<li><strong>pnpm</strong>: v9.0.0 or higher (</code>corepack enable pnpm<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">)</li>
+<li><strong>Git</strong>: v2.40+</li><p></p><h3>Setup Commands</h3>
+</code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">bash
+<h1>1. Clone repository</h1>
+git clone https://github.com/CodewithHassan1/Chi-Town-Customs.git
+cd "Chi-Town Customs"<p></p><h1>2. Install monorepo dependencies</h1>
+pnpm install<p></p><h1>3. Generate Prisma client & initialize database schema</h1>
+pnpm db:generate
+pnpm db:push<p></p><h1>4. Populate verified automotive demo catalog, users & inventory</h1>
+pnpm db:seed<p></p><h1>5. Launch web development server</h1>
+pnpm dev:web
+<h1>Application launches on http://localhost:3000</h1><p></p><h1>6. Launch desktop Electron business client (optional)</h1>
+pnpm dev:desktop
+</code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>---<p></p><h2>5. Authoritative Database Schema (Prisma ORM)</h2><p></p>The relational schema is defined at </code>packages/database/prisma/schema.prisma<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.<p></p><h3>Key Enums</h3>
+<li><strong></code>Role<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></strong>: </code>SUPER_ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>INVENTORY_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>ORDER_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CONTENT_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>FINANCE_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>STAFF<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CUSTOMER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li>
+<li><strong></code>MovementType<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></strong>: </code>RECEIPT<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>ADJUSTMENT<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>SALE<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>RESERVATION<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>RELEASE<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>RETURN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>DAMAGE<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li>
+<li><strong></code>OrderStatus<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></strong>: </code>PENDING<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CONFIRMED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>PROCESSING<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>READY_FOR_PICKUP<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>SHIPPED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>DELIVERED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CANCELLED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>REFUNDED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li>
+<li><strong></code>InquiryType<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></strong>: </code>GENERAL_CONTACT<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>SERVICE_QUOTE<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>APPOINTMENT_REQUEST<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>FINANCING_LEAD<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li>
+<li><strong></code>InquiryStatus<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></strong>: </code>NEW<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CONTACTED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>IN_PROGRESS<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>SCHEDULED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>RESOLVED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>CLOSED<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li><p></p><h3>Core Entity Relationships</h3><p></p></code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+┌──────────────┐          ┌────────────────────┐
+│   Product    │ 1 ──── * │   ProductVariant   │
+└──────────────┘          └────────────────────┘
+       │                            │ 1
+       │                            │
+       │                            *
+┌──────────────┐          ┌────────────────────┐
+│    Order     │ 1 ──── * │ InventoryMovement  │
+└──────────────┘          └────────────────────┘
+       │ 1
+       │
+<li>┌──────────────┐</li>
+│  OrderItem   │
+└──────────────┘
+</code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>#### Product & ProductVariant Schema
+</code>Product<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> represents the conceptual catalog item (e.g. <em>Chi-Town Apex-7 Forged Wheel</em>). </code>ProductVariant<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> represents physical, inventory-tracked SKUs containing exact fitment specifications:
+<li><strong>Wheel Variants</strong>: </code>diameter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>width<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>boltPattern<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>offset<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (ET), </code>centerBore<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>finish<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li><strong>Tire Variants</strong>: </code>tireWidth<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>aspectRatio<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>diameter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>speedRating<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>season<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li><strong>Inventory Control</strong>: </code>stockOnHand<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>stockReserved<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>reorderLevel<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>price<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>salePrice<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>costPrice<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li><p></p>#### Immutable Inventory Movement Ledger
+All inventory adjustments are written to </code>InventoryMovement<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">. Direct mutation of </code>stockOnHand<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> without a ledger record is strictly prohibited by backend handlers. Each movement records:
+<li></code>variantId<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Targeted SKU</li>
+<li></code>quantityDelta<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Integer (+ve for shipments received, -ve for sales/damages)</li>
+<li></code>balanceAfter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Post-transaction balance snapshot</li>
+<li></code>movementType<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Audited category (</code>RECEIPT<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>SALE<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, etc.)</li>
+<li></code>referenceType<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> & </code>referenceId<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Linked Order ID or Purchase Order #</li>
+<li></code>staffUserId<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">: Authenticated staff member responsible</li><p></p>#### Fitment Compatibility Engine (</code>FitmentRecord<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">)
+Maps vehicle attributes (</code>year<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>make<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>model<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>trim<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">) to engineering parameters:
+<li></code>boltPattern<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (e.g. </code>5x114.3<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>5x120<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">)</li>
+<li></code>minDiameter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> & </code>maxDiameter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (inches)</li>
+<li></code>minOffset<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> & </code>maxOffset<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (ET in millimeters)</li>
+<li></code>tireSizeFront<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> & </code>tireSizeRear<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li><p></p>---<p></p><h2>6. REST API Endpoints Specification</h2><p></p><h3>Authentication API</h3><p></p>#### </code>POST /api/auth/login<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Authenticates staff or customer and issues an HTTP-Only signed cookie.
+<li><strong>Request Body:</strong></li>
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">json
+  {
+    "email": "admin@chitowncustoms.com",
+    "password": "ChiTownAdmin2026!"
+  }
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+<li><strong>Success Response (200 OK):</strong></li>
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">json
+  {
+    "success": true,
+    "user": {
+      "id": "cmvlxykfh0000f2kowkiwqy5d",
+      "name": "Marcus Vance (Owner)",
+      "email": "admin@chitowncustoms.com",
+      "role": "SUPER_ADMIN"
+    },
+    "redirectTo": "/admin"
+  }
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+<li><strong>Cookie Set:</strong> </code>chitown_session=<token>; HttpOnly; Path=/; SameSite=Lax; Max-Age=604800<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li><p></p>#### </code>POST /api/auth/logout<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Destroys session and expires cookie.
+<li><strong>Response (200 OK):</strong> </code>Set-Cookie: chitown_session=; Expires=Thu, 01 Jan 1970 00:00:00 GMT<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li><p></p>#### </code>GET /api/auth/me<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Validates currently attached session token and returns active user state.<p></p>---<p></p><h3>Fitment & Catalog API</h3><p></p>#### </code>GET /api/fitment<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Queries compatible bolt patterns, offsets, and wheel sizes for specific vehicle specs.
+<li><strong>Query Parameters:</strong> </code>year<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (int), </code>make<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (string), </code>model<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (string), </code>trim<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (optional string)</li>
+<li><strong>Response (200 OK):</strong></li>
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">json
+  {
+    "success": true,
+    "vehicle": "2023 BMW M3 Competition",
+    "specs": {
+      "boltPattern": "5x112",
+      "diameterRange": [19, 21],
+      "offsetRange": [20, 35],
+      "tireSizeFront": "275/35R19",
+      "tireSizeRear": "285/30R20"
+    },
+    "matchingWheelsCount": 8,
+    "matchingTiresCount": 14
+  }
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>#### </code>GET /api/products<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Retrieves paginated catalog products with multi-dimensional filtering.
+<li><strong>Query Parameters:</strong> </code>category<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (</code>custom-wheels<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> | </code>performance-tires<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">), </code>diameter<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>boltPattern<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>brand<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>sort<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"></li><p></p>---<p></p><h3>Commerce & Checkout API</h3><p></p>#### </code>POST /api/checkout<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Processes storefront orders, validates stock availability, deducts inventory, and records payment transaction.
+<li><strong>Request Body:</strong></li>
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">json
+  {
+    "customer": {
+      "name": "David Miller",
+      "email": "david.m@example.com",
+      "phone": "+1 312-555-0192"
+    },
+    "fulfillmentType": "LOCAL_PICKUP",
+    "items": [
+      { "variantId": "var_apex7_20x95_blk", "quantity": 4 }
+    ],
+    "paymentMethod": "STRIPE_CARD",
+    "paymentToken": "tok_1N..."
+  }
+  </code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"><p></p>---<p></p><h3>Operations & Desktop Sync API</h3><p></p>#### </code>GET /api/desktop/sync<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Full and incremental inventory sync for the shop floor Electron desktop client.
+<li><strong>Query Parameters:</strong> </code>barcode<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (optional), </code>sku<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (optional)</li>
+<li><strong>Response:</strong> Returns variant array, active pricing, stock balances, and recent movement logs.</li><p></p>#### </code>POST /api/inventory/adjust<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">
+Staff-authenticated inventory write endpoint creating auditable </code>InventoryMovement<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> entries.
+<li><strong>Headers:</strong> Cookie </code>chitown_session<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> (Role must be </code>SUPER_ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, or </code>INVENTORY_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">).</li><p></p>---<p></p><h2>7. Security & Authentication Architecture</h2><p></p><h3>1. Edge Middleware Protection (</code>apps/web/src/middleware.ts<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">)</h3>
+<em> Configured with route matcher: </code>["/admin", "/admin/:path</em>"]<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.
+<li>Inspects </code>request.cookies.get("chitown_session")<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li>Unauthenticated requests to </code>/admin<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> or any subroute (e.g. </code>/admin/inventory<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>/admin/orders<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">) immediately receive an <strong>HTTP 307 Temporary Redirect</strong> to </code>/admin/login?from=<pathname><code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li>Passes </code>x-pathname<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> header to downstream Server Components.</li><p></p><h3>2. Server Layout Verification (</code>apps/web/src/app/admin/layout.tsx<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">)</h3>
+<li>Server component executing inside Node.js runtime.</li>
+<li>Cryptographically verifies session token HMAC signature via </code>verifyToken(token)<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li>Enforces role authorization: Only </code>SUPER_ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>ADMIN<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, </code>INVENTORY_MANAGER<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, and </code>STAFF<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> roles are permitted. Unauthorized roles (or customers) are ejected to </code>/admin/login<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li>Standalone isolation: If </code>x-pathname === "/admin/login"<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">, suppresses the admin sidebar navigation to present a dedicated login form.</li><p></p><h3>3. Password Hashing & Secret Management</h3>
+<li>Implemented in </code>apps/web/src/lib/auth.ts<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> using </code>crypto.scryptSync(password, salt, 64)<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li>Timing-safe comparison using </code>crypto.timingSafeEqual<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> prevents timing attack vectors.</li>
+<li>Tokens are signed with SHA-256 HMAC incorporating user ID, name, email, role, and issuance timestamp (</code>iat<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">).</li><p></p>---<p></p><h2>8. Cold-Start Serverless Database Resilience (Vercel)</h2><p></p>On serverless hosting environments (such as Vercel), the local SQLite filesystem is ephemeral and read-only outside </code>/tmp<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.
+<li><strong>Implementation:</strong> </code>apps/web/src/lib/db.ts<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> detects serverless production execution.</li>
+<li>On container cold start, </code>seed.db<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> is replicated into </code>/tmp/chitown.db<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">.</li>
+<li></code>next.config.js<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> includes </code>outputFileTracingIncludes<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> ensuring the SQLite seed binary is packaged into the Vercel deployment artifact.</li>
+<li>In the event of a database driver failure, </code>apps/web/src/lib/fallback-data.ts<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;"> serves verified catalog fallback objects so the storefront never throws an HTTP 500.</li><p></p>---<p></p><h2>9. Performance & Build Verification Commands</h2><p></p></code>`<code style="background-color:#f4f4f4;padding:2px 4px;font-family:Consolas,monospace;">bash
+<h1>Run full monorepo type checking and compilation</h1>
+pnpm build<p></p><h1>Target specific workspace packages</h1>
+pnpm --filter web build
+pnpm --filter desktop build<p></p><h1>Run automated integration and unit test suite</h1>
+pnpm test
+</code>``
+
+</body>
+</html>
