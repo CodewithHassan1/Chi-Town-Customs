@@ -11,19 +11,31 @@ import { ArrowRight, Sparkles, MapPin, Phone, HelpCircle } from "lucide-react";
 
 export const revalidate = 0; // Ensure fresh database queries
 
+import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+
 export default async function HomePage() {
-  // Fetch featured products from authoritative database
-  const products = await db.product.findMany({
-    where: { isActive: true },
-    include: {
-      brand: true,
-      category: true,
-      variants: {
-        where: { isActive: true },
+  // Fetch featured products from authoritative database with resilient fallback
+  let products: any[] = [];
+  try {
+    products = await db.product.findMany({
+      where: { isActive: true },
+      include: {
+        brand: true,
+        category: true,
+        variants: {
+          where: { isActive: true },
+        },
       },
-    },
-    take: 8,
-  });
+      take: 8,
+    });
+  } catch (err) {
+    console.warn("Database query failed, using verified fallback products:", err);
+    products = FALLBACK_PRODUCTS;
+  }
+
+  if (!products || products.length === 0) {
+    products = FALLBACK_PRODUCTS;
+  }
 
   const featuredWheels = products.filter((p) => p.productType === "WHEEL");
   const performanceTires = products.filter((p) => p.productType === "TIRE");

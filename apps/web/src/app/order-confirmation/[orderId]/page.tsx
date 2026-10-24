@@ -14,15 +14,20 @@ export const revalidate = 0;
 export default async function OrderConfirmationPage({ params }: OrderConfirmationPageProps) {
   const { orderId } = await params;
 
-  const order = await db.order.findFirst({
-    where: {
-      OR: [{ id: orderId }, { orderNumber: orderId }],
-    },
-    include: {
-      items: true,
-      payments: true,
-    },
-  });
+  let order: any = null;
+  try {
+    order = await db.order.findFirst({
+      where: {
+        OR: [{ id: orderId }, { orderNumber: orderId }],
+      },
+      include: {
+        items: true,
+        payments: true,
+      },
+    });
+  } catch (err) {
+    console.warn("Order lookup error:", err);
+  }
 
   if (!order) {
     notFound();
@@ -135,7 +140,7 @@ export default async function OrderConfirmationPage({ params }: OrderConfirmatio
           </div>
 
           <div className="divide-y divide-[#1F232B]">
-            {order.items.map((item) => (
+            {order.items.map((item: any) => (
               <div key={item.id} className="p-5 flex items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-white">{item.productName}</h4>

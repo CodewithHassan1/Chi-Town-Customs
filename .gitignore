@@ -32,6 +32,8 @@ packages/database/.env
 *.db-journal
 packages/database/prisma/dev.db
 packages/database/prisma/dev.db-journal
+!*seed.db
+!**/*seed.db
 
 # Vercel deployment & build caches
 .vercel/

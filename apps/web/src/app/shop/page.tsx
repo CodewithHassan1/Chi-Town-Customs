@@ -2,6 +2,7 @@ import Link from "next/link";
 import db from "@/lib/db";
 import ProductCard from "@/components/ProductCard";
 import { Filter, SlidersHorizontal, Search, RotateCcw, Sparkles } from "lucide-react";
+import { FALLBACK_PRODUCTS, FALLBACK_CATEGORIES, FALLBACK_BRANDS } from "@/lib/fallback-data";
 
 interface ShopPageProps {
   searchParams: Promise<{
@@ -52,24 +53,48 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   if (sort === "price-desc") orderBy = { basePrice: "desc" };
   if (sort === "name-asc") orderBy = { name: "asc" };
 
-  // Execute database query
-  const [products, categories, brands] = await Promise.all([
-    db.product.findMany({
-      where,
-      orderBy,
-      include: {
-        brand: true,
-        category: true,
-        variants: {
-          where: { isActive: true },
+  // Execute database query with resilient fallback
+  let products: any[] = [];
+  let categories: any[] = [];
+  let brands: any[] = [];
+
+  try {
+    const [p, c, b] = await Promise.all([
+      db.product.findMany({
+        where,
+        orderBy,
+        include: {
+          brand: true,
+          category: true,
+          variants: {
+            where: { isActive: true },
+          },
         },
-      },
-    }),
-    db.category.findMany({ orderBy: { sortOrder: "asc" } }),
-    db.brand.findMany({ orderBy: { name: "asc" } }),
-  ]);
+      }),
+      db.category.findMany({ orderBy: { sortOrder: "asc" } }),
+      db.brand.findMany({ orderBy: { name: "asc" } }),
+    ]);
+    products = p;
+    categories = c;
+    brands = b;
+  } catch (err) {
+    console.warn("Shop query failed, using verified catalog fallback:", err);
+    categories = FALLBACK_CATEGORIES;
+    brands = FALLBACK_BRANDS;
+    products = FALLBACK_PRODUCTS as any;
+  }
 
   const hasActiveFilters = Boolean(category || brand || boltPattern || diameter || q || sort);
+
+  if (products.length === 0 && !hasActiveFilters) {
+    categories = categories.length ? categories : FALLBACK_CATEGORIES;
+    brands = brands.length ? brands : FALLBACK_BRANDS;
+    products = FALLBACK_PRODUCTS as any;
+  }
+
+  if (category && products.length > 0) {
+    products = products.filter((p) => p.category?.slug === category);
+  }
 
   return (
     <div className="min-h-screen bg-[#08090B] py-10">

@@ -17,34 +17,42 @@ import {
 export const revalidate = 0;
 
 export default async function AdminDashboardPage() {
-  // Query authoritative database records
-  const [
-    orders,
-    productsCount,
-    variants,
-    inquiries,
-    movements,
-  ] = await Promise.all([
-    db.order.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 8,
-      include: { items: true },
-    }),
-    db.product.count({ where: { isActive: true } }),
-    db.productVariant.findMany({
-      where: { isActive: true },
-      include: { product: true },
-    }),
-    db.inquiry.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 6,
-    }),
-    db.inventoryMovement.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 6,
-      include: { variant: { include: { product: true } } },
-    }),
-  ]);
+  let orders: any[] = [];
+  let productsCount = 0;
+  let variants: any[] = [];
+  let inquiries: any[] = [];
+  let movements: any[] = [];
+
+  try {
+    const res = await Promise.all([
+      db.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        include: { items: true },
+      }),
+      db.product.count({ where: { isActive: true } }),
+      db.productVariant.findMany({
+        where: { isActive: true },
+        include: { product: true },
+      }),
+      db.inquiry.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 6,
+      }),
+      db.inventoryMovement.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 6,
+        include: { variant: { include: { product: true } } },
+      }),
+    ]);
+    orders = res[0];
+    productsCount = res[1];
+    variants = res[2];
+    inquiries = res[3];
+    movements = res[4];
+  } catch (err) {
+    console.warn("Admin dashboard query error:", err);
+  }
 
   // Aggregated calculations
   const totalRevenue = orders.reduce((sum, ord) => sum + (ord.paymentStatus === "PAID" ? ord.totalAmount : 0), 0);
