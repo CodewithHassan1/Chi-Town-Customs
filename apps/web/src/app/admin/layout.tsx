@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     ["SUPER_ADMIN", "ADMIN", "INVENTORY_MANAGER", "STAFF"].includes(session.role);
 
   // If on the login page itself:
-  if (pathname === "/admin/login") {
+  if (pathname === "/admin/login" || pathname.startsWith("/admin/login/")) {
     // If already authenticated as an authorized staff member, redirect straight to dashboard
     if (isStaff) {
       redirect("/admin");
@@ -47,7 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen bg-[#08090B] text-gray-200 flex flex-col md:flex-row font-sans">
+    <div className="min-h-screen w-full flex-1 bg-[#08090B] text-gray-200 flex flex-col md:flex-row font-sans">
       {/* Admin Sidebar */}
       <aside className="w-full md:w-64 bg-[#0d0f13] border-r border-[#22262E] flex flex-col shrink-0">
         {/* Brand Header */}

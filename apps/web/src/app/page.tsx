@@ -50,7 +50,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* 2. Interactive Vehicle Fitment Entry Point */}
-      <section className="relative z-20 mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section id="fitment-finder" className="relative z-20 pt-8 sm:pt-14 pb-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full scroll-mt-20">
         <FitmentWidget />
       </section>
 
@@ -76,7 +76,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {featuredWheels.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
@@ -84,13 +84,13 @@ export default async function HomePage() {
       </section>
 
       {/* 4. Category Visual Showcase Tiles */}
-      <section className="py-12 bg-[#0c0e12] border-y border-[#22262E]">
+      <section className="py-10 sm:py-12 bg-[#0c0e12] border-y border-[#22262E]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {/* Tile 1: Custom Wheels */}
             <Link
               href="/shop?category=custom-wheels"
-              className="group relative h-72 rounded-2xl overflow-hidden border border-[#22262E] hover:border-[#D71920] transition-all flex flex-col justify-end p-6"
+              className="group relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-[#22262E] hover:border-[#D71920] transition-all flex flex-col justify-end p-5 sm:p-6"
             >
               <Image
                 src="/images/wheel-forged.jpg"
@@ -186,7 +186,7 @@ export default async function HomePage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {performanceTires.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}

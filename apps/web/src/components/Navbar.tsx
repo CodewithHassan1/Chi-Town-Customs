@@ -48,11 +48,16 @@ export default function Navbar() {
   const pathname = usePathname();
   const { itemCount, setIsCartOpen } = useCart();
 
+  // Do not render storefront navbar on admin routes or admin login
+  if (pathname === "/admin" || pathname?.startsWith("/admin/")) {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-40 bg-[#08090B]/95 backdrop-blur-md border-b border-[#22262E] transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         {/* Three-Part Desktop & Responsive Mobile Layout */}
-        <div className="flex items-center justify-center h-20 gap-3 sm:gap-4 lg:gap-6">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-4 lg:gap-6">
           {/* Part 1 — Left: Chi-Town Customs USA Logo */}
           <div className="flex items-center flex-shrink-0">
             <Link
@@ -65,7 +70,7 @@ export default function Navbar() {
                 alt="Chi-Town Customs USA - Wheel Repair & Custom Rim Specialist Chicago"
                 width={210}
                 height={40}
-                className="h-8 sm:h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
+                className="h-7 xs:h-8 sm:h-9 w-auto object-contain transition-opacity duration-200 group-hover:opacity-90"
                 priority
               />
             </Link>
@@ -132,12 +137,12 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsCartOpen(true)}
-              className="relative flex items-center justify-center w-10 h-10 rounded-lg bg-[#111317] hover:bg-[#191C21] border border-[#292D34] hover:border-[#D71920] text-white transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D71920]"
+              className="relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#111317] hover:bg-[#191C21] border border-[#292D34] hover:border-[#D71920] text-white transition-all duration-200 group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D71920]"
               aria-label={`View Shopping Cart (${itemCount} items)`}
             >
-              <ShoppingCart className="w-4.5 h-4.5 text-gray-300 group-hover:text-white transition-colors" />
+              <ShoppingCart className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-gray-300 group-hover:text-white transition-colors" />
               {itemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-[#D71920] text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md border-2 border-[#08090B]">
+                <span className="absolute -top-1.5 -right-1.5 bg-[#D71920] text-white text-[10px] font-black w-4.5 h-4.5 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shadow-md border-2 border-[#08090B]">
                   {itemCount}
                 </span>
               )}

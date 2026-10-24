@@ -79,20 +79,20 @@ export default function FitmentWidget() {
   };
 
   return (
-    <div className="w-full bg-[#111317] border border-[#292D34] rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+    <div className="w-full bg-[#111317] border border-[#292D34] rounded-xl p-4 sm:p-6 md:p-8 shadow-2xl relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#D71920]/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-[#22262E] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6 border-b border-[#22262E] pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-[#191C21] border border-[#292D34] flex items-center justify-center text-[#D71920]">
-            <Gauge className="w-5 h-5" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#191C21] border border-[#292D34] flex items-center justify-center text-[#D71920] shrink-0">
+            <Gauge className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white uppercase tracking-wide">
+            <h3 className="text-base sm:text-lg font-bold text-white uppercase tracking-wide">
               Vehicle Fitment Compatibility Finder
             </h3>
-            <p className="text-xs text-gray-400">
+            <p className="text-[11px] sm:text-xs text-gray-400">
               Select your vehicle specs to filter 100% rub-free wheels and tires guaranteed by Chi-Town Customs.
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function FitmentWidget() {
         {fitmentResult && (
           <button
             onClick={() => setFitmentResult(null)}
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-white transition-colors self-start sm:self-auto"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             Reset Vehicle
@@ -109,8 +109,8 @@ export default function FitmentWidget() {
         )}
       </div>
 
-      {/* Selector Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      {/* Selector Grid - 1 col on mobile, 2 col on tablet/foldables, 4 col on desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Year */}
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1.5">

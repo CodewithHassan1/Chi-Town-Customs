@@ -32,10 +32,10 @@ export default function TrustReviewsSection() {
     <section className="py-20 bg-[#08090B] border-b border-[#22262E]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Rating Overview Header */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-14 bg-[#111317] border border-[#22262E] rounded-2xl p-6 sm:p-8">
-          <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-xl bg-[#191C21] border border-[#292D34] flex flex-col items-center justify-center shrink-0">
-              <span className="text-3xl font-black text-white">4.5</span>
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8 mb-10 sm:mb-14 bg-[#111317] border border-[#22262E] rounded-2xl p-4 xs:p-6 sm:p-8">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center gap-4 sm:gap-5">
+            <div className="w-16 h-16 xs:w-20 xs:h-20 rounded-xl bg-[#191C21] border border-[#292D34] flex flex-col items-center justify-center shrink-0">
+              <span className="text-2xl xs:text-3xl font-black text-white">4.5</span>
               <div className="flex text-amber-400">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-3 h-3 fill-amber-400" />

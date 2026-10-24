@@ -4,91 +4,108 @@ import { ArrowRight, Phone, Wrench } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-[90vh] flex items-center justify-center bg-[#08090B] overflow-hidden border-b border-[#22262E]">
-      {/* Background Cinematic Image with Subtle Vignette & Wet Ground Reflections */}
+    <section className="relative w-full min-h-[calc(100vh-4rem)] sm:min-h-[calc(100vh-5rem)] min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100dvh-5rem)] flex flex-col justify-between bg-[#08090B] overflow-hidden border-b border-[#22262E]">
+      {/* Background Cinematic Image with Layered Vignette & Reflections */}
       <div className="absolute inset-0 z-0">
         <Image
           src="/images/hero-car.jpg"
           alt="Chi-Town Customs USA - Luxury Performance Sports Car on Forged Wheels"
           fill
           priority
+          sizes="100vw"
           className="object-cover object-center scale-105 transition-transform duration-1000 ease-out"
         />
-        {/* Layered Cinematic Overlays for razor sharp text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#08090B] via-[#08090B]/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#08090B]/90 via-[#08090B]/40 to-transparent" />
+        {/* Layered Cinematic Overlays for razor sharp text contrast across all device viewports */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#08090B] via-[#08090B]/65 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#08090B]/95 via-[#08090B]/55 to-transparent" />
         <div className="absolute inset-0 bg-radial-gradient from-transparent via-black/30 to-[#08090B]/80" />
       </div>
 
-      {/* Hero Content Container */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 flex flex-col items-start justify-center">
+      {/* Main Content Container - Vertically Balanced across all screen sizes */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex-1 flex flex-col justify-center py-4 xs:py-6 sm:py-8 lg:py-10">
         {/* Chicago Authority Badge */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="inline-flex items-center gap-2 bg-[#111317]/90 backdrop-blur-md border border-[#292D34] px-3.5 py-1.5 rounded-full shadow-xl">
-            <span className="w-2 h-2 rounded-full bg-[#D71920] animate-pulse" />
-            <span className="text-xs font-bold tracking-widest uppercase text-gray-200">
+        <div className="flex flex-wrap items-center gap-2 mb-3 xs:mb-4 sm:mb-5">
+          <div className="inline-flex items-center gap-1.5 xs:gap-2 bg-[#111317]/90 backdrop-blur-md border border-[#292D34] px-2.5 xs:px-3.5 py-1 xs:py-1.5 rounded-full shadow-xl">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-[#D71920] animate-pulse shrink-0" />
+            <span className="text-[10px] xs:text-xs font-bold tracking-wider sm:tracking-widest uppercase text-gray-200">
               Chicago's Premier Custom Wheel &amp; Tire Authority
             </span>
-            <span className="text-gray-500 font-mono text-xs">| 311 N Cicero Ave</span>
+            <span className="hidden sm:inline text-gray-500 font-mono text-[10px] xs:text-xs">
+              | 311 N Cicero Ave
+            </span>
           </div>
         </div>
 
-        {/* Cinematic Headline */}
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-bold tracking-tight text-white uppercase max-w-3xl leading-[1.05] drop-shadow-2xl">
+        {/* Cinematic Headline - Fluid scaling from narrow phones (344px) to smart displays (1280px) and large tablets */}
+        <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-7.5xl font-heading font-black tracking-tight text-white uppercase max-w-4xl leading-[1.08] xs:leading-[1.05] sm:leading-[1.02] drop-shadow-2xl">
           BUILT TO <span className="text-gradient-chrome">STAND OUT.</span>
         </h1>
 
         {/* Supporting Copy */}
-        <p className="mt-6 text-base sm:text-lg lg:text-xl text-gray-300 max-w-2xl font-body font-normal leading-relaxed drop-shadow">
+        <p className="mt-2.5 xs:mt-3.5 sm:mt-4 lg:mt-5 text-xs xs:text-sm sm:text-base lg:text-lg text-gray-300 max-w-2xl font-body font-normal leading-relaxed drop-shadow">
           Engineered from aerospace-grade 6061-T6 forged alloy. Offering custom wheel fitments, track-tested tires, and computerized hydraulic rim repair &amp; powder coating at our Chicago facility.
         </p>
 
-        {/* CTAs */}
-        <div className="mt-10 flex flex-wrap items-center gap-4 w-full sm:w-auto">
+        {/* Action CTAs - Responsive wrapping with touch targets */}
+        <div className="mt-4 xs:mt-5 sm:mt-8 flex flex-wrap items-center gap-2 xs:gap-3 sm:gap-4 w-full sm:w-auto">
           <Link
             href="/shop?category=custom-wheels"
-            className="btn-primary px-8 py-4 rounded-md text-sm font-bold tracking-wider uppercase flex items-center justify-center gap-2 w-full sm:w-auto shadow-glow-red"
+            className="btn-primary flex-1 xs:flex-initial px-4 xs:px-6 sm:px-8 py-2.5 xs:py-3 sm:py-3.5 rounded-lg text-xs sm:text-sm font-bold tracking-wider uppercase flex items-center justify-center gap-2 shadow-glow-red text-center whitespace-nowrap"
           >
             <span>Shop Custom Wheels</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
           </Link>
 
           <Link
             href="/services"
-            className="btn-secondary px-7 py-4 rounded-md text-sm font-bold tracking-wider uppercase flex items-center justify-center gap-2 w-full sm:w-auto"
+            className="btn-secondary flex-1 xs:flex-initial px-4 xs:px-5 sm:px-7 py-2.5 xs:py-3 sm:py-3.5 rounded-lg text-xs sm:text-sm font-bold tracking-wider uppercase flex items-center justify-center gap-2 text-center whitespace-nowrap"
           >
-            <Wrench className="w-4 h-4 text-[#D71920]" />
-            <span>Explore Our Services</span>
+            <Wrench className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D71920] shrink-0" />
+            <span>Explore Services</span>
           </Link>
 
           <a
             href="tel:+17732873000"
-            className="flex items-center justify-center gap-2 px-5 py-4 text-xs font-bold tracking-wider uppercase text-gray-300 hover:text-white transition-colors border border-transparent hover:border-[#292D34] rounded-md"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 xs:gap-2 px-3 xs:px-4 py-2 xs:py-2.5 sm:py-3 text-[11px] sm:text-xs font-bold tracking-wider uppercase text-gray-300 hover:text-white transition-colors border border-[#292D34] hover:border-[#D71920] rounded-lg bg-[#111317]/80 whitespace-nowrap"
           >
-            <Phone className="w-4 h-4 text-[#D71920]" />
-            <span>Call (773) 287-3000</span>
+            <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D71920] shrink-0" />
+            <span>(773) 287-3000</span>
           </a>
         </div>
 
-        {/* Quick Highlights Row */}
-        <div className="mt-14 pt-8 border-t border-[#292D34]/80 grid grid-cols-2 sm:grid-cols-4 gap-6 w-full max-w-4xl text-xs text-gray-400">
-          <div className="space-y-1">
-            <p className="text-white font-extrabold text-base tracking-wide">6061-T6</p>
-            <p className="text-gray-400">Aerospace Forged Aluminum</p>
+        {/* Quick Highlights Row - Responsive 2-col or 4-col layout */}
+        <div className="mt-4 xs:mt-6 sm:mt-8 lg:mt-10 pt-3 xs:pt-4 sm:pt-6 border-t border-[#292D34]/80 grid grid-cols-2 sm:grid-cols-4 gap-2.5 xs:gap-3.5 sm:gap-6 w-full max-w-4xl text-xs text-gray-400">
+          <div className="space-y-0.5">
+            <p className="text-white font-extrabold text-xs xs:text-sm sm:text-base tracking-wide">6061-T6</p>
+            <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-400">Aerospace Forged Alloy</p>
           </div>
-          <div className="space-y-1">
-            <p className="text-white font-extrabold text-base tracking-wide">4.5 ★ Rating</p>
-            <p className="text-gray-400">207+ Verified Chicago Drivers</p>
+          <div className="space-y-0.5">
+            <p className="text-white font-extrabold text-xs xs:text-sm sm:text-base tracking-wide">4.5 ★ Rating</p>
+            <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-400">207+ Verified Reviews</p>
           </div>
-          <div className="space-y-1">
-            <p className="text-white font-extrabold text-base tracking-wide">24-48 HR</p>
-            <p className="text-gray-400">Wheel Truing &amp; Powder Coating</p>
+          <div className="space-y-0.5">
+            <p className="text-white font-extrabold text-xs xs:text-sm sm:text-base tracking-wide">24-48 HR</p>
+            <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-400">CNC Truing &amp; Coating</p>
           </div>
-          <div className="space-y-1">
-            <p className="text-white font-extrabold text-base tracking-wide">0% Down</p>
-            <p className="text-gray-400">Snap &amp; Acima Pre-Approval</p>
+          <div className="space-y-0.5">
+            <p className="text-white font-extrabold text-xs xs:text-sm sm:text-base tracking-wide">0% Down</p>
+            <p className="text-[10px] xs:text-[11px] sm:text-xs text-gray-400">Snap &amp; Acima Approval</p>
           </div>
         </div>
+      </div>
+
+      {/* Subtle Scroll Cue at Viewport Bottom */}
+      <div className="relative z-10 w-full flex items-center justify-center pb-2 pt-1">
+        <a
+          href="#fitment-finder"
+          className="inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-mono uppercase tracking-widest text-gray-400 hover:text-white transition-colors animate-bounce"
+          aria-label="Scroll down to vehicle fitment finder"
+        >
+          <span>Scroll To Explore</span>
+          <svg className="w-3.5 h-3.5 text-[#D71920]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </a>
       </div>
     </section>
   );

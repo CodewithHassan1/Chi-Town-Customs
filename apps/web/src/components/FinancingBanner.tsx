@@ -5,17 +5,17 @@ export default function FinancingBanner() {
   return (
     <section className="py-16 bg-[#08090B] border-b border-[#22262E] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-[#111317] via-[#16191F] to-[#111317] border border-[#292D34] rounded-2xl p-8 sm:p-12 shadow-2xl relative">
+        <div className="bg-gradient-to-r from-[#111317] via-[#16191F] to-[#111317] border border-[#292D34] rounded-2xl p-5 xs:p-6 sm:p-10 md:p-12 shadow-2xl relative">
           <div className="absolute top-0 right-0 w-80 h-80 bg-[#D71920]/5 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-            <div className="space-y-4 max-w-2xl">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8">
+            <div className="space-y-3 sm:space-y-4 max-w-2xl">
               <div className="inline-flex items-center gap-2 bg-[#D71920]/15 text-[#F1262D] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-[#D71920]/30">
                 <CreditCard className="w-3.5 h-3.5" />
                 <span>Flexible Payment Solutions</span>
               </div>
 
-              <h2 className="text-3xl sm:text-4xl font-black text-white uppercase tracking-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white uppercase tracking-tight">
                 GET THE WHEELS YOU WANT TODAY. <span className="text-[#D71920]">0% DOWN OPTIONS.</span>
               </h2>
 

@@ -9,7 +9,7 @@ export function middleware(request: NextRequest) {
   requestHeaders.set("x-pathname", pathname);
 
   // Protect /admin routes (except /admin/login)
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  if (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login")) {
     const sessionToken = request.cookies.get("chitown_session")?.value;
 
     // Fast reject unauthenticated visits and redirect to login

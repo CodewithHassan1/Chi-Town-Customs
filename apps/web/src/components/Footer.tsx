@@ -15,8 +15,8 @@ export default function Footer() {
   return (
     <footer className="bg-[#050607] border-t border-[#22262E] text-gray-400 text-sm">
       {/* Top Trust Banner */}
-      <div className="border-b border-[#191C21] py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="border-b border-[#191C21] py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#111317] border border-[#292D34] flex items-center justify-center shrink-0">
               <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
@@ -60,7 +60,7 @@ export default function Footer() {
       </div>
 
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
         {/* Brand Column */}
         <div className="lg:col-span-2 space-y-4">
           <div className="relative w-48 h-12">
