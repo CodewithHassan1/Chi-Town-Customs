@@ -111,7 +111,7 @@ async function main() {
     data: {
       name: "Chi-Town Forged",
       slug: "chi-town-forged",
-      logoUrl: "/images/logo.svg",
+      logoUrl: "/images/logo.avif",
       description: "Bespoke aerospace-grade 6061-T6 forged aluminum wheels engineered and finished in Chicago.",
     },
   });

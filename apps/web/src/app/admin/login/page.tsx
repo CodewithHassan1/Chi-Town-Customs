@@ -30,8 +30,11 @@ export default function AdminLoginPage() {
         throw new Error(data.error || "Authentication failed");
       }
 
-      router.push("/admin");
-      router.refresh();
+      const destination =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("from") || "/admin"
+          : "/admin";
+      window.location.href = destination;
     } catch (err: any) {
       setErrorMsg(err.message);
     } finally {
@@ -54,7 +57,7 @@ export default function AdminLoginPage() {
         {/* Brand Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-block relative w-48 h-12 mx-auto">
-            <Image src="/images/logo.svg" alt="Chi-Town Customs USA" fill className="object-contain" priority />
+            <Image src="/images/logo.avif" alt="Chi-Town Customs USA" fill className="object-contain" priority />
           </Link>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#16191F] border border-[#22262E] text-[11px] font-mono text-gray-300">
             <ShieldCheck className="w-3.5 h-3.5 text-[#D71920]" />

@@ -1,5 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
+import { cookies, headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { verifyToken } from "@/lib/auth";
+import AdminLogoutButton from "@/components/AdminLogoutButton";
 import {
   LayoutDashboard,
   Package,
@@ -12,11 +16,36 @@ import {
   ShieldAlert,
   Settings,
   ExternalLink,
-  Laptop,
-  LogOut,
 } from "lucide-react";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export const dynamic = "force-dynamic";
+
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get("chitown_session")?.value;
+  const session = token ? verifyToken(token) : null;
+  const isStaff =
+    session &&
+    ["SUPER_ADMIN", "ADMIN", "INVENTORY_MANAGER", "STAFF"].includes(session.role);
+
+  // If on the login page itself:
+  if (pathname === "/admin/login") {
+    // If already authenticated as an authorized staff member, redirect straight to dashboard
+    if (isStaff) {
+      redirect("/admin");
+    }
+    // Render clean standalone login view without sidebar navigation
+    return <>{children}</>;
+  }
+
+  // Enforce authentication on all protected admin routes
+  if (!isStaff) {
+    redirect("/admin/login");
+  }
+
   return (
     <div className="min-h-screen bg-[#08090B] text-gray-200 flex flex-col md:flex-row font-sans">
       {/* Admin Sidebar */}
@@ -25,7 +54,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-5 border-b border-[#22262E] flex items-center justify-between">
           <Link href="/admin" className="flex items-center gap-2.5">
             <div className="relative w-36 h-9">
-              <Image src="/images/logo.svg" alt="Chi-Town Customs Admin" fill className="object-contain" priority />
+              <Image src="/images/logo.avif" alt="Chi-Town Customs Admin" fill className="object-contain" priority />
             </div>
           </Link>
           <span className="text-[10px] font-mono bg-[#D71920]/20 text-[#F1262D] border border-[#D71920]/40 px-2 py-0.5 rounded font-bold">
@@ -120,8 +149,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="p-4 border-t border-[#22262E] space-y-3 bg-[#0a0c0f]">
           <div className="flex items-center justify-between text-xs">
             <div>
-              <p className="font-bold text-white">Marcus Vance</p>
-              <p className="text-[10px] text-[#D71920] font-mono font-semibold">SUPER_ADMIN</p>
+              <p className="font-bold text-white">{session?.name || "Marcus Vance"}</p>
+              <p className="text-[10px] text-[#D71920] font-mono font-semibold">{session?.role || "SUPER_ADMIN"}</p>
             </div>
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" title="Database Connected" />
           </div>
@@ -135,6 +164,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span>View Live Storefront</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
+
+            {/* Secure Sign Out Button */}
+            <AdminLogoutButton />
           </div>
         </div>
       </aside>

@@ -65,7 +65,7 @@ export default function Footer() {
         <div className="lg:col-span-2 space-y-4">
           <div className="relative w-48 h-12">
             <Image
-              src="/images/logo.svg"
+              src="/images/logo.avif"
               alt="Chi-Town Customs USA"
               fill
               className="object-contain"
@@ -188,15 +188,6 @@ export default function Footer() {
             <li>
               <Link href="/about" className="hover:text-white transition-colors">
                 About Our Chicago Shop
-              </Link>
-            </li>
-            <li className="pt-2">
-              <Link
-                href="/admin"
-                className="inline-flex items-center gap-1.5 text-gray-500 hover:text-white font-medium bg-[#111317] border border-[#22262E] px-2.5 py-1 rounded"
-              >
-                <Shield className="w-3 h-3 text-[#D71920]" />
-                Staff Admin Portal
               </Link>
             </li>
           </ul>

@@ -10,7 +10,6 @@ import { CircleMenu, CircleMenuItem } from "@/components/ui/circle-menu";
 import {
   ShoppingCart,
   Phone,
-  ShieldCheck,
   User,
   Home,
   Disc,
@@ -127,16 +126,6 @@ export default function Navbar() {
             >
               <User className="w-4 h-4 text-[#A4A8B0]" />
               <span className="hidden 2xl:inline">Account</span>
-            </Link>
-
-            {/* Staff Hub Shortcut */}
-            <Link
-              href="/admin"
-              className="hidden md:inline-flex items-center gap-1.5 h-10 px-3 rounded-lg text-xs font-medium text-gray-400 hover:text-white hover:bg-[#16191F] border border-transparent hover:border-[#292D34] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D71920]"
-              title="Staff & Management Hub"
-            >
-              <ShieldCheck className="w-4 h-4 text-[#A4A8B0]" />
-              <span className="hidden 2xl:inline">Staff Hub</span>
             </Link>
 
             {/* Shopping Cart Drawer Trigger */}

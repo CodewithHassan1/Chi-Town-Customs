@@ -77,7 +77,7 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
       document.body.style.overflow = "hidden";
       if (videoRef.current) {
         videoRef.current.currentTime = 0;
-        videoRef.current.play().catch(() => {});
+        videoRef.current.play().catch(() => { });
       }
     };
     window.addEventListener("replay-cinematic-intro", handleReplay);
@@ -170,9 +170,8 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
   return (
     <div
       id="cinematic-intro-overlay"
-      className={`fixed inset-0 z-[99999] pointer-events-auto select-none bg-[#08090B] transition-opacity duration-500 ${
-        phase === "done" ? "opacity-0 pointer-events-none" : "opacity-100"
-      }`}
+      className={`fixed inset-0 z-[99999] pointer-events-auto select-none bg-[#08090B] transition-opacity duration-500 ${phase === "done" ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
       style={{
         clipPath:
           phase === "tire"
@@ -182,9 +181,8 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
     >
       {/* 1. CINEMATIC VIDEO LAYER */}
       <div
-        className={`absolute inset-0 w-full h-full overflow-hidden transition-all duration-300 ${
-          phase === "impact" ? "scale-[1.04] filter brightness-125 contrast-125" : "scale-100"
-        } ${phase === "tire" ? "opacity-30" : "opacity-100"}`}
+        className={`absolute inset-0 w-full h-full overflow-hidden transition-all duration-300 ${phase === "impact" ? "scale-[1.04] filter brightness-125 contrast-125" : "scale-100"
+          } ${phase === "tire" ? "opacity-30" : "opacity-100"}`}
       >
         <video
           ref={videoRef}
@@ -205,26 +203,12 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
         >
           <source src="/video/chitown_car_intro.mp4" type="video/mp4" />
         </video>
-
-        {/* Ambient Brand Watermark Accent */}
-        <div className="absolute top-6 left-6 sm:top-8 sm:left-10 z-20 flex items-center gap-3 pointer-events-none">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#D71920] animate-ping" />
-          <div className="space-y-0.5">
-            <span className="text-[11px] font-heading font-black tracking-widest uppercase text-white/90 drop-shadow">
-              CHI-TOWN CUSTOMS USA
-            </span>
-            <p className="text-[9px] font-mono tracking-wider uppercase text-gray-400">
-              311 N Cicero Ave &bull; Chicago, IL
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* 2. SCREEN IMPACT BEAT (White/Red Metallic Light Flash) */}
       <div
-        className={`absolute inset-0 pointer-events-none z-30 transition-opacity duration-150 ${
-          phase === "impact" ? "opacity-90" : "opacity-0"
-        }`}
+        className={`absolute inset-0 pointer-events-none z-30 transition-opacity duration-150 ${phase === "impact" ? "opacity-90" : "opacity-0"
+          }`}
         style={{
           background:
             "radial-gradient(circle at center, rgba(255,255,255,0.95) 0%, rgba(215,25,32,0.6) 45%, rgba(8,9,11,0.9) 100%)",

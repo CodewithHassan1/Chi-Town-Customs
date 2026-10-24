@@ -50,7 +50,7 @@ export default async function HomePage() {
       <Hero />
 
       {/* 2. Interactive Vehicle Fitment Entry Point */}
-      <section className="relative z-20 -mt-10 sm:-mt-14 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+      <section className="relative z-20 mt-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <FitmentWidget />
       </section>
 
