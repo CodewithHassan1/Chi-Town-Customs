@@ -36,12 +36,6 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
     if (hasEndedRef.current) return;
     hasEndedRef.current = true;
 
-    try {
-      sessionStorage.setItem("ctc_intro_seen", "true");
-    } catch {
-      // ignore storage errors
-    }
-
     // Restore body scroll
     document.body.style.overflow = "";
 
@@ -52,7 +46,7 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
     }, 400);
   }, [onComplete]);
 
-  // Check session storage and reduced motion
+  // Handle intro lifecycle on every page load/reload
   useEffect(() => {
     // Check prefers-reduced-motion
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -61,18 +55,7 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
       return;
     }
 
-    // Check if already viewed in this browser session
-    try {
-      const alreadySeen = sessionStorage.getItem("ctc_intro_seen");
-      if (alreadySeen && !forcePlay) {
-        setIsVisible(false);
-        return;
-      }
-    } catch {
-      // storage unavailable
-    }
-
-    // Initialize intro
+    // Initialize intro on every page load/reload
     setIsVisible(true);
     setPhase("video");
     document.body.style.overflow = "hidden";
@@ -209,6 +192,7 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
           autoPlay
           muted={isMuted}
           playsInline
+          preload="auto"
           poster="/video/chitown_car_intro_poster.jpg"
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnded}
@@ -219,13 +203,8 @@ export default function CinematicIntroOverlay({ onComplete, forcePlay = false }:
             }
           }}
         >
-          <source src="/video/chitown_car_intro.webm" type="video/webm" />
           <source src="/video/chitown_car_intro.mp4" type="video/mp4" />
         </video>
-
-        {/* Cinematic Letterbox & Atmosphere Overlays */}
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#08090B] via-transparent to-[#08090B]/60" />
-        <div className="absolute inset-0 pointer-events-none bg-radial-gradient from-transparent via-black/20 to-[#08090B]/80" />
 
         {/* Ambient Brand Watermark Accent */}
         <div className="absolute top-6 left-6 sm:top-8 sm:left-10 z-20 flex items-center gap-3 pointer-events-none">

@@ -62,7 +62,7 @@ export default function Navbar() {
               aria-label="Chi-Town Customs USA Homepage"
             >
               <Image
-                src="/images/logo.svg"
+                src="/images/logo.avif"
                 alt="Chi-Town Customs USA - Wheel Repair & Custom Rim Specialist Chicago"
                 width={210}
                 height={40}

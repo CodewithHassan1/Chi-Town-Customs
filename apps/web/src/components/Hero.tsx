@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Phone, Wrench } from "lucide-react";
-import ReplayIntroButton from "./ReplayIntroButton";
 
 export default function Hero() {
   return (
@@ -23,7 +22,7 @@ export default function Hero() {
 
       {/* Hero Content Container */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 flex flex-col items-start justify-center">
-        {/* Chicago Authority Badge & Replay Film CTA */}
+        {/* Chicago Authority Badge */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="inline-flex items-center gap-2 bg-[#111317]/90 backdrop-blur-md border border-[#292D34] px-3.5 py-1.5 rounded-full shadow-xl">
             <span className="w-2 h-2 rounded-full bg-[#D71920] animate-pulse" />
@@ -32,8 +31,6 @@ export default function Hero() {
             </span>
             <span className="text-gray-500 font-mono text-xs">| 311 N Cicero Ave</span>
           </div>
-
-          <ReplayIntroButton />
         </div>
 
         {/* Cinematic Headline */}
