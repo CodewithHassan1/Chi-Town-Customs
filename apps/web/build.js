@@ -11,8 +11,9 @@ const rootDir = path.resolve(__dirname, "../..");
 
 // 1. Ensure DATABASE_URL fallback exists for Prisma generation & Next.js static builds
 if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = "file:./seed.db";
-  console.log("[build] Defaulted DATABASE_URL to file:./seed.db");
+  process.env.DATABASE_URL =
+    "postgresql://neondb_owner:npg_io4aztB5ZETP@ep-soft-breeze-b5or8a1q-pooler.c-7.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
+  console.log("[build] Defaulted DATABASE_URL to Neon PostgreSQL");
 } else {
   console.log("[build] Using configured DATABASE_URL");
 }
