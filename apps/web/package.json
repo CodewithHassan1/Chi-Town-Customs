@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "prisma generate --schema=../../packages/database/prisma/schema.prisma && next build",
+    "build": "node build.js",
     "start": "next start -p 3000",
     "lint": "next lint",
     "test": "node test/suite.js"
