@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Oswald, Inter, Montserrat, Roboto, Teko, Open_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
-import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
@@ -103,7 +102,6 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-[#08090B] text-[#F5F5F5] flex flex-col font-body selection:bg-[#D71920] selection:text-white">
         <CartProvider>
-          <AnnouncementBar />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

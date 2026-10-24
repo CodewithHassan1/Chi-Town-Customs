@@ -53,7 +53,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-40 bg-[#08090B]/95 backdrop-blur-md border-b border-[#22262E] transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Three-Part Desktop & Responsive Mobile Layout */}
-        <div className="flex items-center justify-between h-20 gap-3 sm:gap-4 lg:gap-6">
+        <div className="flex items-center justify-center h-20 gap-3 sm:gap-4 lg:gap-6">
           {/* Part 1 — Left: Chi-Town Customs USA Logo */}
           <div className="flex items-center flex-shrink-0">
             <Link
@@ -87,9 +87,8 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`relative flex items-center h-full px-2 py-1 text-xs xl:text-sm font-semibold tracking-wider uppercase transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D71920] rounded group ${
-                    isActive ? "text-white" : "text-gray-300 hover:text-white"
-                  }`}
+                  className={`relative flex items-center h-full px-2 py-1 text-xs xl:text-sm font-semibold tracking-wider uppercase transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D71920] rounded group ${isActive ? "text-white" : "text-gray-300 hover:text-white"
+                    }`}
                 >
                   <RandomLetterSwap
                     label={link.label}

@@ -12,6 +12,7 @@ import { ArrowRight, Sparkles, MapPin, Phone, HelpCircle } from "lucide-react";
 export const revalidate = 0; // Ensure fresh database queries
 
 import { FALLBACK_PRODUCTS } from "@/lib/fallback-data";
+import CinematicIntroOverlay from "@/components/CinematicIntroOverlay";
 
 export default async function HomePage() {
   // Fetch featured products from authoritative database with resilient fallback
@@ -42,6 +43,9 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Cinematic Automotive Video & Tire Reveal Overlay */}
+      <CinematicIntroOverlay />
+
       {/* 1. Cinematic Hero Section */}
       <Hero />
 
