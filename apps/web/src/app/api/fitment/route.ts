@@ -47,14 +47,24 @@ export async function GET(request: Request) {
 
     const { year, make: queryMake, model: queryModel } = validation.data;
 
-    // Search for match in database
-    const record = await db.fitmentRecord.findFirst({
+    // Search for match in database: first exact year, then generation-wide
+    let record = await db.fitmentRecord.findFirst({
       where: {
         year,
-        make: { contains: queryMake },
-        model: { contains: queryModel.split(" ")[0] }, // match model prefix
+        make: { contains: queryMake, mode: "insensitive" },
+        model: { contains: queryModel.split(" ")[0], mode: "insensitive" },
       },
     });
+
+    if (!record) {
+      record = await db.fitmentRecord.findFirst({
+        where: {
+          make: { contains: queryMake, mode: "insensitive" },
+          model: { contains: queryModel.split(" ")[0], mode: "insensitive" },
+        },
+        orderBy: { year: "desc" },
+      });
+    }
 
     if (!record) {
       return NextResponse.json({

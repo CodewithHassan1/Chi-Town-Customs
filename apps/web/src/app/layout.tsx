@@ -65,9 +65,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Chi-Town Customs USA" }],
   icons: {
-    icon: "/images/logo-emblem.svg",
-    shortcut: "/images/logo-emblem.svg",
-    apple: "/images/logo-emblem.svg",
+    icon: "/images/favicon.png",
+    shortcut: "/images/favicon.png",
+    apple: "/images/favicon.png",
   },
   openGraph: {
     title: "Chi-Town Customs USA | Built To Stand Out",

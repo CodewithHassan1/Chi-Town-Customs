@@ -498,11 +498,14 @@ export default function ProductCMSClient({
                     onChange={(e) => setFormData({ ...formData, primaryImage: e.target.value })}
                     className="w-full bg-[#08090B] border border-[#292D34] rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#D71920]"
                   >
-                    <option value="/images/wheel-forged.jpg">Custom Forged Wheel (Black/Graphite)</option>
-                    <option value="/images/finishes-showcase.jpg">Finishes Showcase (Red/Bronze/Titanium)</option>
-                    <option value="/images/tire-performance.jpg">Performance Tire (Tread Pattern)</option>
+                    <option value="/images/wheel-apex7.jpg">Apex-7 Forged Monoblock Wheel (Bare Metal Rim)</option>
+                    <option value="/images/wheel-streetviper.jpg">StreetViper 2-Piece Modular Wheel (Deep Dish Rim)</option>
+                    <option value="/images/michelin-ps4s.jpg">Michelin Pilot Sport 4S (Unmounted Tire)</option>
+                    <option value="/images/continental-dws06.jpg">Continental ExtremeContact DWS06 Plus (Unmounted Tire)</option>
+                    <option value="/images/tire-performance.jpg">Performance Tires Showroom Stack</option>
+                    <option value="/images/finishes-showcase.jpg">Signature Finishes Showcase</option>
                     <option value="/images/wheel-repair.jpg">Wheel Repair Workshop</option>
-                    <option value="/images/hero-car.jpg">Hero Supercar Wheels Package</option>
+                    <option value="/images/hero-car.jpg">Supercar On Custom Wheels</option>
                   </select>
                 </div>
               </div>

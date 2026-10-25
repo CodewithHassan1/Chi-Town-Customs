@@ -194,7 +194,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                   Bolt Pattern (PCD)
                 </h4>
                 <div className="grid grid-cols-2 gap-1.5 text-xs">
-                  {["5x114.3", "5x120", "5x112", "5x115"].map((pcd) => (
+                  {["5x114.3", "5x120", "5x112", "5x115", "6x135", "5x130"].map((pcd) => (
                     <Link
                       key={pcd}
                       href={`/shop?${category ? `category=${category}&` : ""}boltPattern=${pcd}`}

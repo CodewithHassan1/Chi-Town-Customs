@@ -93,7 +93,7 @@ export default async function HomePage() {
               className="group relative h-64 sm:h-72 rounded-2xl overflow-hidden border border-[#22262E] hover:border-[#D71920] transition-all flex flex-col justify-end p-5 sm:p-6"
             >
               <Image
-                src="/images/wheel-forged.jpg"
+                src="/images/wheel-apex7.jpg"
                 alt="Custom Forged Wheels"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
