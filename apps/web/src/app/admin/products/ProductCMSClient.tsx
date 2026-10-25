@@ -14,6 +14,9 @@ import {
   AlertCircle,
   Sparkles,
   ExternalLink,
+  CheckSquare,
+  Square,
+  AlertTriangle,
 } from "lucide-react";
 
 interface ProductRecord {
@@ -77,6 +80,122 @@ export default function ProductCMSClient({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string; error: boolean } | null>(null);
+
+  // Bulk selection state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  // Safe deletion modal state
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    isBulk: boolean;
+    targetId?: string;
+    targetName?: string;
+    count?: number;
+  }>({ isOpen: false, isBulk: false });
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === filteredProducts.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredProducts.map((p) => p.id));
+    }
+  };
+
+  const handlePromptDelete = (p: ProductRecord) => {
+    setDeleteModal({
+      isOpen: true,
+      isBulk: false,
+      targetId: p.id,
+      targetName: p.name,
+    });
+  };
+
+  const handlePromptBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    setDeleteModal({
+      isOpen: true,
+      isBulk: true,
+      count: selectedIds.length,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      if (deleteModal.isBulk) {
+        const res = await fetch("/api/products/bulk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ids: selectedIds,
+            action: "DELETE",
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Bulk deletion failed");
+
+        // Refetch products
+        const refRes = await fetch("/api/products");
+        const refData = await refRes.json();
+        if (refData.products) setProducts(refData.products);
+        setSelectedIds([]);
+      } else if (deleteModal.targetId) {
+        const res = await fetch(`/api/products/${deleteModal.targetId}?permanent=true`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Deletion failed");
+
+        if (data.mode === "DELETED") {
+          setProducts((prev) => prev.filter((p) => p.id !== deleteModal.targetId));
+        } else if (data.mode === "ARCHIVED") {
+          setProducts((prev) =>
+            prev.map((p) => (p.id === deleteModal.targetId ? { ...p, isActive: false } : p))
+          );
+        }
+      }
+      setDeleteModal({ isOpen: false, isBulk: false });
+    } catch (err: any) {
+      alert(`Delete error: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleBulkStatusChange = async (action: "ACTIVATE" | "DEACTIVATE") => {
+    if (selectedIds.length === 0) return;
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/products/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ids: selectedIds,
+          action,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Bulk action failed");
+
+      const isActive = action === "ACTIVATE";
+      setProducts((prev) =>
+        prev.map((p) => (selectedIds.includes(p.id) ? { ...p, isActive } : p))
+      );
+      setSelectedIds([]);
+    } catch (err: any) {
+      alert(`Bulk action error: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -257,12 +376,65 @@ export default function ProductCMSClient({
         </div>
       </div>
 
+      {/* Bulk Action Toolbar */}
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-4 bg-red-950/20 border border-red-900/60 p-4 rounded-xl text-xs">
+          <div className="flex items-center gap-2 text-white font-bold">
+            <CheckSquare className="w-4 h-4 text-[#D71920]" />
+            <span>
+              {selectedIds.length} {selectedIds.length === 1 ? "product" : "products"} selected
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => handleBulkStatusChange("ACTIVATE")}
+              className="px-3 py-1.5 rounded bg-emerald-950/60 text-emerald-300 border border-emerald-800 hover:bg-emerald-900 flex items-center gap-1 font-bold"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Bulk Publish</span>
+            </button>
+            <button
+              onClick={() => handleBulkStatusChange("DEACTIVATE")}
+              className="px-3 py-1.5 rounded bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 font-bold"
+            >
+              <span>Bulk Draft</span>
+            </button>
+            <button
+              onClick={handlePromptBulkDelete}
+              className="px-3 py-1.5 rounded bg-red-900/60 text-red-200 border border-red-700 hover:bg-red-800 flex items-center gap-1 font-bold"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Bulk Delete</span>
+            </button>
+            <button
+              onClick={() => setSelectedIds([])}
+              className="px-3 py-1.5 rounded bg-[#16191F] text-gray-400 hover:text-white border border-[#292D34]"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Products Table */}
       <div className="bg-[#111317] border border-[#22262E] rounded-xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#08090B] text-gray-400 uppercase font-mono border-b border-[#22262E]">
               <tr>
+                <th className="py-3 px-4 w-10 text-center">
+                  <button
+                    onClick={handleSelectAll}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    {selectedIds.length === filteredProducts.length && filteredProducts.length > 0 ? (
+                      <CheckSquare className="w-4 h-4 text-[#D71920]" />
+                    ) : (
+                      <Square className="w-4 h-4" />
+                    )}
+                  </button>
+                </th>
                 <th className="py-3 px-4">Product Details</th>
                 <th className="py-3 px-4">Type</th>
                 <th className="py-3 px-4">Brand</th>
@@ -273,76 +445,103 @@ export default function ProductCMSClient({
               </tr>
             </thead>
             <tbody className="divide-y divide-[#1F232B] text-gray-300">
-              {filteredProducts.map((p) => (
-                <tr key={p.id} className="hover:bg-[#16191F] transition-colors">
-                  <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="relative w-12 h-12 rounded bg-[#08090B] border border-[#22262E] overflow-hidden shrink-0">
-                        <Image
-                          src={p.primaryImage || "/images/wheel-forged.jpg"}
-                          alt={p.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <div className="font-bold text-white leading-tight">{p.name}</div>
-                        <div className="text-[10px] text-gray-500 font-mono">/{p.slug}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#191C21] border border-[#292D34]">
-                      {p.productType}
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-gray-300">
-                    {p.brand?.name || "Chi-Town Customs"}
-                  </td>
-                  <td className="py-3.5 px-4 font-mono font-bold text-white">
-                    ${p.basePrice.toFixed(2)}
-                    {p.salePrice && p.salePrice < p.basePrice && (
-                      <span className="text-[11px] text-emerald-400 block font-normal">
-                        Sale: ${p.salePrice.toFixed(2)}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-3.5 px-4 text-center font-mono font-bold text-white">
-                    {p.variants?.length || 0}
-                  </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <button
-                      onClick={() => handleToggleActive(p)}
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
-                        p.isActive
-                          ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800"
-                          : "bg-gray-800 text-gray-400 border border-gray-700"
-                      }`}
-                    >
-                      {p.isActive ? "Published" : "Draft"}
-                    </button>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/shop/${p.slug}`}
-                        target="_blank"
-                        className="p-1.5 text-gray-400 hover:text-white rounded hover:bg-[#191C21]"
-                        title="View on Storefront"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </Link>
+              {filteredProducts.map((p) => {
+                const isSelected = selectedIds.includes(p.id);
+                return (
+                  <tr
+                    key={p.id}
+                    className={`hover:bg-[#16191F] transition-colors ${
+                      isSelected ? "bg-[#1d1416]" : ""
+                    }`}
+                  >
+                    <td className="py-3.5 px-4 text-center">
                       <button
-                        onClick={() => handleOpenEdit(p)}
-                        className="p-1.5 text-gray-400 hover:text-[#D71920] rounded hover:bg-[#191C21]"
-                        title="Edit Product"
+                        onClick={() => handleToggleSelect(p.id)}
+                        className="text-gray-400 hover:text-white"
                       >
-                        <Edit2 className="w-3.5 h-3.5" />
+                        {isSelected ? (
+                          <CheckSquare className="w-4 h-4 text-[#D71920]" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-12 h-12 rounded bg-[#08090B] border border-[#22262E] overflow-hidden shrink-0">
+                          <Image
+                            src={p.primaryImage || "/images/wheel-forged.jpg"}
+                            alt={p.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="font-bold text-white leading-tight">{p.name}</div>
+                          <div className="text-[10px] text-gray-500 font-mono">/{p.slug}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#191C21] border border-[#292D34]">
+                        {p.productType}
+                      </span>
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-gray-300">
+                      {p.brand?.name || "Chi-Town Customs"}
+                    </td>
+                    <td className="py-3.5 px-4 font-mono font-bold text-white">
+                      ${p.basePrice.toFixed(2)}
+                      {p.salePrice && p.salePrice < p.basePrice && (
+                        <span className="text-[11px] text-emerald-400 block font-normal">
+                          Sale: ${p.salePrice.toFixed(2)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3.5 px-4 text-center font-mono font-bold text-white">
+                      {p.variants?.length || 0}
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <button
+                        onClick={() => handleToggleActive(p)}
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
+                          p.isActive
+                            ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800"
+                            : "bg-gray-800 text-gray-400 border border-gray-700"
+                        }`}
+                      >
+                        {p.isActive ? "Published" : "Draft"}
+                      </button>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/shop/${p.slug}`}
+                          target="_blank"
+                          className="p-1.5 text-gray-400 hover:text-white rounded hover:bg-[#191C21]"
+                          title="View on Storefront"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                        <button
+                          onClick={() => handleOpenEdit(p)}
+                          className="p-1.5 text-gray-400 hover:text-[#D71920] rounded hover:bg-[#191C21]"
+                          title="Edit Product"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handlePromptDelete(p)}
+                          className="p-1.5 text-gray-400 hover:text-red-400 rounded hover:bg-[#191C21]"
+                          title="Delete Product"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -579,6 +778,48 @@ export default function ProductCMSClient({
           </div>
         </div>
       )}
+
+      {/* Safe Deletion Confirmation Modal */}
+      {deleteModal.isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+          <div className="bg-[#111317] border border-red-900/60 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="p-2 rounded-full bg-red-950/60 border border-red-800/80">
+                <AlertTriangle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-black text-white uppercase">Confirm Product Deletion</h3>
+                <span className="text-[11px] font-mono text-red-400">Integrity-Preserving Action</span>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-300 leading-relaxed">
+              {deleteModal.isBulk
+                ? `Are you sure you want to delete ${deleteModal.count} selected products? Products with past customer orders will be safely archived/drafted to preserve sales records, while unused products will be permanently removed.`
+                : `Are you sure you want to delete "${deleteModal.targetName}"? If this product has historical customer orders, it will be deactivated/archived to maintain order history. Otherwise, it will be permanently deleted.`}
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#22262E]">
+              <button
+                type="button"
+                onClick={() => setDeleteModal({ isOpen: false, isBulk: false })}
+                className="btn-secondary px-4 py-2 rounded text-xs font-bold uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="px-5 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-wider flex items-center gap-1.5"
+              >
+                {isDeleting ? "Processing..." : "Confirm & Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

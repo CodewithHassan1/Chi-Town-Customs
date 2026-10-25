@@ -297,8 +297,8 @@ model Payment {
 }
 
 model Inquiry {
-  id                    String        @id @default(cuid())
-  inquiryType           String        @default("GENERAL_CONTACT") // InquiryType enum string
+  id                    String              @id @default(cuid())
+  inquiryType           String              @default("GENERAL_CONTACT") // InquiryType enum string
   customerName          String
   customerEmail         String
   customerPhone         String
@@ -306,12 +306,34 @@ model Inquiry {
   requestedService      String?       // "Rim Repair", "Powder Coating", "Tires", "Financing", etc.
   message               String
   preferredDate         String?
-  status                String        @default("NEW") // InquiryStatus enum string
+  status                String              @default("NEW") // InquiryStatus enum string
   internalNotes         String?
   assignedStaffId       String?
-  assignedStaff         User?         @relation("AssignedStaff", fields: [assignedStaffId], references: [id], onDelete: SetNull)
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  assignedStaff         User?               @relation("AssignedStaff", fields: [assignedStaffId], references: [id], onDelete: SetNull)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  notifications         QuoteNotification[]
+}
+
+model QuoteNotification {
+  id                String    @id @default(cuid())
+  inquiryId         String
+  inquiry           Inquiry   @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
+  fromStatus        String
+  toStatus          String
+  recipient         String
+  subject           String
+  templateName      String
+  status            String    @default("PENDING") // PENDING, SENT, FAILED
+  provider          String?   // "RESEND", "SENDGRID", "SMTP", "MOCK"
+  providerMessageId String?
+  errorMessage      String?
+  attempts          Int       @default(0)
+  lastAttemptAt     DateTime?
+  sentAt            DateTime?
+  idempotencyKey    String    @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 }
 
 model SiteSetting {

@@ -1,7 +1,69 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { InquirySubmissionSchema } from "@chi-town/contracts";
+import { requireAdminSession } from "@/lib/auth";
+import { dispatchQuoteNotification } from "@/lib/email-service";
 
+/**
+ * GET /api/inquiries
+ * Protected: Administrator & Staff Inquiry/Quote query.
+ */
+export async function GET(request: Request) {
+  try {
+    await requireAdminSession(request);
+
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get("status");
+    const type = searchParams.get("type");
+    const q = searchParams.get("q");
+
+    const where: any = {};
+    if (status && status !== "ALL") {
+      where.status = status;
+    }
+    if (type && type !== "ALL") {
+      where.inquiryType = type;
+    }
+    if (q) {
+      where.OR = [
+        { customerName: { contains: q } },
+        { customerEmail: { contains: q } },
+        { customerPhone: { contains: q } },
+        { vehicleYearMakeModel: { contains: q } },
+        { requestedService: { contains: q } },
+        { message: { contains: q } },
+      ];
+    }
+
+    const inquiries = await db.inquiry.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        assignedStaff: {
+          select: { id: true, name: true, email: true },
+        },
+        notifications: {
+          orderBy: { createdAt: "desc" },
+          take: 5,
+        },
+      },
+    });
+
+    return NextResponse.json({ success: true, inquiries });
+  } catch (error: any) {
+    const isAuthError =
+      error.message?.includes("UNAUTHORIZED") || error.message?.includes("FORBIDDEN");
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch inquiries" },
+      { status: isAuthError ? 401 : 500 }
+    );
+  }
+}
+
+/**
+ * POST /api/inquiries
+ * Public: Customer Quote / Appointment / Financing lead submission.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -52,6 +114,22 @@ export async function POST(request: Request) {
         }),
       },
     });
+
+    // Automatically trigger initial confirmation email to customer
+    try {
+      await dispatchQuoteNotification({
+        inquiryId: inquiry.id,
+        fromStatus: "SUBMISSION",
+        toStatus: "NEW",
+        customerEmail: inquiry.customerEmail,
+        customerName: inquiry.customerName,
+        requestedService: inquiry.requestedService,
+        vehicle: inquiry.vehicleYearMakeModel,
+        preferredDate: inquiry.preferredDate,
+      });
+    } catch (emailErr) {
+      console.warn("Initial confirmation email dispatch error (non-fatal):", emailErr);
+    }
 
     return NextResponse.json({
       success: true,

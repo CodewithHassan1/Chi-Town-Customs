@@ -105,3 +105,79 @@ export const ProductSaveSchema = z.object({
   isActive: z.boolean().default(true),
 });
 export type ProductSaveInput = z.infer<typeof ProductSaveSchema>;
+
+// --- Quote / Inquiry Statuses & Lifecycle Transitions ---
+export const VALID_INQUIRY_STATUSES = [
+  "NEW",
+  "UNDER_REVIEW",
+  "CONTACTED",
+  "IN_PROGRESS",
+  "AWAITING_CUSTOMER",
+  "QUOTED",
+  "APPROVED",
+  "SCHEDULED",
+  "COMPLETED",
+  "DECLINED",
+  "CANCELLED",
+] as const;
+
+export type InquiryStatusType = (typeof VALID_INQUIRY_STATUSES)[number];
+
+export const ALLOWED_STATUS_TRANSITIONS: Record<string, string[]> = {
+  NEW: ["UNDER_REVIEW", "CONTACTED", "IN_PROGRESS", "CANCELLED"],
+  UNDER_REVIEW: ["IN_PROGRESS", "AWAITING_CUSTOMER", "QUOTED", "CANCELLED"],
+  CONTACTED: ["IN_PROGRESS", "AWAITING_CUSTOMER", "QUOTED", "CANCELLED"],
+  IN_PROGRESS: ["AWAITING_CUSTOMER", "QUOTED", "APPROVED", "CANCELLED"],
+  AWAITING_CUSTOMER: ["IN_PROGRESS", "QUOTED", "APPROVED", "DECLINED", "CANCELLED"],
+  QUOTED: ["APPROVED", "DECLINED", "AWAITING_CUSTOMER", "CANCELLED"],
+  APPROVED: ["SCHEDULED", "IN_PROGRESS", "COMPLETED", "CANCELLED"],
+  SCHEDULED: ["COMPLETED", "CANCELLED", "IN_PROGRESS"],
+  DECLINED: ["UNDER_REVIEW", "CANCELLED"],
+  COMPLETED: [],
+  CANCELLED: ["UNDER_REVIEW"],
+};
+
+export function isValidStatusTransition(fromStatus: string, toStatus: string): boolean {
+  if (fromStatus === toStatus) return true;
+  const allowed = ALLOWED_STATUS_TRANSITIONS[fromStatus];
+  if (!allowed) return false;
+  return allowed.includes(toStatus);
+}
+
+// --- Quote Status Update Schema ---
+export const QuoteStatusUpdateSchema = z.object({
+  status: z.enum(VALID_INQUIRY_STATUSES),
+  internalNotes: z.string().optional(),
+  assignedStaffId: z.string().nullable().optional(),
+});
+export type QuoteStatusUpdateInput = z.infer<typeof QuoteStatusUpdateSchema>;
+
+// --- Bulk Inquiry Action Schema ---
+export const BulkInquiryActionSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1, "Select at least one record").max(100, "Maximum 100 items per batch"),
+  action: z.enum(["DELETE", "UPDATE_STATUS"]),
+  status: z.enum(VALID_INQUIRY_STATUSES).optional(),
+});
+export type BulkInquiryActionInput = z.infer<typeof BulkInquiryActionSchema>;
+
+// --- Bulk Product Action Schema ---
+export const BulkProductActionSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1, "Select at least one product").max(100, "Maximum 100 products per batch"),
+  action: z.enum(["DELETE", "ACTIVATE", "DEACTIVATE"]),
+});
+export type BulkProductActionInput = z.infer<typeof BulkProductActionSchema>;
+
+// --- User Update Role Schema ---
+export const UserUpdateRoleSchema = z.object({
+  role: z.enum([
+    "SUPER_ADMIN",
+    "ADMIN",
+    "INVENTORY_MANAGER",
+    "ORDER_MANAGER",
+    "CONTENT_MANAGER",
+    "FINANCE_MANAGER",
+    "STAFF",
+    "CUSTOMER",
+  ]),
+});
+export type UserUpdateRoleInput = z.infer<typeof UserUpdateRoleSchema>;

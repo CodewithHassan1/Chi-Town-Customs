@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "@/lib/db";
 import { ProductSaveSchema } from "@chi-town/contracts";
+import { requireAdminSession } from "@/lib/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -8,6 +9,11 @@ interface RouteParams {
 
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
+    const session = await requireAdminSession(request, [
+      "SUPER_ADMIN",
+      "ADMIN",
+      "INVENTORY_MANAGER",
+    ]);
     const { id } = await params;
     const body = await request.json();
 
@@ -63,37 +69,123 @@ export async function PUT(request: Request, { params }: RouteParams) {
         action: "PRODUCT_UPDATED",
         entity: "Product",
         entityId: id,
+        staffUserId: session.id,
+        staffEmail: session.email,
         metadataJson: JSON.stringify({ name, slug, basePrice, isActive }),
       },
     });
 
     return NextResponse.json({ success: true, product: updated });
   } catch (error: any) {
-    console.error("❌ Product Update Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const isAuth =
+      error.message?.includes("UNAUTHORIZED") || error.message?.includes("FORBIDDEN");
+    return NextResponse.json(
+      { error: error.message || "Failed to update product" },
+      { status: isAuth ? 401 : 500 }
+    );
   }
 }
 
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
+    const session = await requireAdminSession(request, ["SUPER_ADMIN", "ADMIN"]);
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const forcePermanent = searchParams.get("permanent") === "true";
 
-    // Soft delete / deactivate to preserve historical orders
-    const deactivated = await db.product.update({
+    const product = await db.product.findUnique({
       where: { id },
-      data: { isActive: false },
-    });
-
-    await db.auditLog.create({
-      data: {
-        action: "PRODUCT_DEACTIVATED",
-        entity: "Product",
-        entityId: id,
+      include: {
+        variants: {
+          include: {
+            orderItems: true,
+          },
+        },
       },
     });
 
-    return NextResponse.json({ success: true, product: deactivated });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    // Check if any variant is linked to historical customer orders
+    const hasOrderHistory = product.variants.some((v) => v.orderItems.length > 0);
+
+    if (hasOrderHistory || !forcePermanent) {
+      // Soft-delete / Archive to preserve financial & audit history
+      const archived = await db.product.update({
+        where: { id },
+        data: { isActive: false },
+      });
+
+      await db.auditLog.create({
+        data: {
+          action: "PRODUCT_ARCHIVED",
+          entity: "Product",
+          entityId: id,
+          staffUserId: session.id,
+          staffEmail: session.email,
+          metadataJson: JSON.stringify({
+            name: product.name,
+            reason: hasOrderHistory
+              ? "Preserving linked historical customer orders"
+              : "Standard admin soft-deactivation",
+          }),
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        mode: "ARCHIVED",
+        message: hasOrderHistory
+          ? `Product "${product.name}" was deactivated/archived because it is referenced in past customer orders.`
+          : `Product "${product.name}" was set to draft/archived status.`,
+        product: archived,
+      });
+    }
+
+    // If zero order history and permanent deletion requested:
+    await db.$transaction(async (tx) => {
+      // Delete cart items referencing these variants
+      const variantIds = product.variants.map((v) => v.id);
+      await tx.cartItem.deleteMany({
+        where: { variantId: { in: variantIds } },
+      });
+
+      // Delete inventory movements referencing these variants
+      await tx.inventoryMovement.deleteMany({
+        where: { variantId: { in: variantIds } },
+      });
+
+      // Delete product (cascades to variants)
+      await tx.product.delete({
+        where: { id },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          action: "PRODUCT_PERMANENTLY_DELETED",
+          entity: "Product",
+          entityId: id,
+          staffUserId: session.id,
+          staffEmail: session.email,
+          metadataJson: JSON.stringify({ name: product.name, slug: product.slug }),
+        },
+      });
+    });
+
+    return NextResponse.json({
+      success: true,
+      mode: "DELETED",
+      message: `Product "${product.name}" and variants were permanently deleted.`,
+      deletedId: id,
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const isAuth =
+      error.message?.includes("UNAUTHORIZED") || error.message?.includes("FORBIDDEN");
+    return NextResponse.json(
+      { error: error.message || "Failed to delete product" },
+      { status: isAuth ? 401 : 500 }
+    );
   }
 }
